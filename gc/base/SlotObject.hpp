@@ -148,7 +148,7 @@ public:
 	 * Read reference from slot
 	 * @return address of object slot reference to.
 	 */
-	MMINLINE omrobjectptr_t readReferenceFromSlot()
+	omrobjectptr_t readReferenceFromSlot()
 	{
 		omrobjectptr_t value = NULL;
 #if defined (OMR_GC_COMPRESSED_POINTERS)

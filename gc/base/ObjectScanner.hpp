@@ -176,7 +176,7 @@ public:
 	 *
 	 * @return a pointer to a slot object encapsulating the next object slot, or NULL if no next object slot
 	 */
-	MMINLINE GC_SlotObject *
+	virtual GC_SlotObject *
 	getNextSlot()
 	{
 		bool const compressed = compressObjectReferences();
@@ -248,7 +248,7 @@ public:
 	 * @param[out] *isLeafSlot will be true if the slot refers to a leaf object
 	 * @return a pointer to a slot object encapsulating the next object slot, or NULL if no next object slot
 	 */
-	MMINLINE GC_SlotObject *
+	virtual GC_SlotObject *
 	getNextSlot(bool* isLeafSlot)
 	{
 		bool const compressed = compressObjectReferences();
