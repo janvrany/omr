@@ -137,6 +137,16 @@ TR::Instruction *generateITYPE( TR::InstOpCode::Mnemonic op,
                                 TR::CodeGenerator *cg,
                                 TR::Instruction   *previous = NULL);
 
+TR::Instruction *generateITYPE( TR::InstOpCode::Mnemonic op,
+                                TR::Node          *n,
+                                TR::Register      *treg,
+                                TR::Register      *sreg,
+                                uint32_t          imm,
+                                TR::RegisterDependencyConditions *cond,
+                                TR::CodeGenerator *cg,
+                                TR::Instruction   *previous = NULL);
+
+
 TR::Instruction *generateLOAD(  TR::InstOpCode::Mnemonic op,
                                 TR::Node          *n,
                                 TR::Register      *trgReg,

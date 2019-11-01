@@ -787,11 +787,15 @@ int32_t TR::RVSystemLinkage::buildArgs(TR::Node *callNode,
 
 TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
    {
-   TR::SymbolReference *callSymRef = callNode->getSymbolReference();
-
    const TR::RVLinkageProperties &pp = getProperties();
    TR::RealRegister *sp = cg()->machine()->getRealRegister(pp.getStackPointerRegister());
    TR::RealRegister *ra = cg()->machine()->getRealRegister(TR::RealRegister::ra);
+   TR::Register *target = nullptr;
+
+   if (callNode->getOpCode().isCallIndirect())
+      {
+      target = cg()->evaluate(callNode->getFirstChild());
+      }
 
    TR::RegisterDependencyConditions *dependencies =
       new (trHeapMemory()) TR::RegisterDependencyConditions(
@@ -811,10 +815,16 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
          }
       }
 
-   TR::MethodSymbol *callSymbol = callSymRef->getSymbol()->castToMethodSymbol();
-   generateJTYPE(TR::InstOpCode::_jal, callNode, ra,
-      (uintptr_t)callSymbol->getMethodAddress(),
-      dependencies, callSymRef ? callSymRef : callNode->getSymbolReference(), NULL, cg());
+   if (callNode->getOpCode().isCallIndirect())
+      {
+      generateITYPE(TR::InstOpCode::_jalr, callNode, ra, target, 0, dependencies, cg());
+      }
+   else
+      {
+      TR::SymbolReference *callSymRef = callNode->getSymbolReference();
+      generateJTYPE(TR::InstOpCode::_jal, callNode, ra,
+            (uintptr_t)callSymRef->getMethodAddress(), dependencies, callSymRef, NULL, cg());
+      }
 
    cg()->machine()->setLinkRegisterKilled(true);
 
@@ -834,22 +844,30 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
    switch(callNode->getOpCodeValue())
       {
       case TR::icall:
+      case TR::icalli:
       case TR::iucall:
+      case TR::iucalli:
          retReg = dependencies->searchPostConditionRegister(
                      pp.getIntegerReturnRegister());
          break;
       case TR::lcall:
+      case TR::lcalli:
       case TR::lucall:
+      case TR::lucalli:
       case TR::acall:
+      case TR::acalli:
          retReg = dependencies->searchPostConditionRegister(
                      pp.getLongReturnRegister());
          break;
       case TR::fcall:
+      case TR::fcalli:
       case TR::dcall:
+      case TR::dcalli:
          retReg = dependencies->searchPostConditionRegister(
                      pp.getFloatReturnRegister());
          break;
       case TR::call:
+      case TR::calli:
          retReg = NULL;
          break;
       default:
@@ -858,6 +876,10 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
       }
 
    callNode->setRegister(retReg);
+   if (callNode->getOpCode().isCallIndirect())
+      {
+      callNode->getFirstChild()->decReferenceCount();
+      }
    return retReg;
    }
 

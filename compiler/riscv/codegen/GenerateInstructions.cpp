@@ -102,6 +102,21 @@ TR::Instruction *generateITYPE( TR::InstOpCode::Mnemonic op,
    return new (cg->trHeapMemory()) TR::ItypeInstruction(op, n, treg, sreg, imm, cg);
    }
 
+TR::Instruction *generateITYPE( TR::InstOpCode::Mnemonic op,
+                                TR::Node          *n,
+                                TR::Register      *treg,
+                                TR::Register      *sreg,
+                                uint32_t          imm,
+                                TR::RegisterDependencyConditions *cond,
+                                TR::CodeGenerator *cg,
+                                TR::Instruction   *previous)
+   {
+   if (previous)
+      return new (cg->trHeapMemory()) TR::ItypeInstruction(op, n, treg, sreg, imm, cond, previous, cg);
+   return new (cg->trHeapMemory()) TR::ItypeInstruction(op, n, treg, sreg, imm, cond, cg);
+   }
+
+
 TR::Instruction *generateLOAD(  TR::InstOpCode::Mnemonic op,
                                 TR::Node          *n,
                                 TR::Register      *trgReg,
