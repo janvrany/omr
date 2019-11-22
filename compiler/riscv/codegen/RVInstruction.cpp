@@ -482,15 +482,15 @@ uint8_t *TR::JtypeInstruction::generateBinaryEncoding() {
          }
       else
          {
-         TR_ASSERT(0, "Non-recursive calls not (yet) supported");
+         offset = (uint8_t*)getSymbolReference()->getMethodAddress() - cursor;
          }
       }
    else
       {
-      uintptr_t destination = (uintptr_t)(getLabelSymbol()->getCodeLocation());
+      uint8_t* destination = (uint8_t*)(getLabelSymbol()->getCodeLocation());
       if (destination != 0)
          {
-         offset = destination - (uintptr_t)cursor;
+         offset = destination - cursor;
          }
       else
          {
