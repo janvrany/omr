@@ -34,6 +34,7 @@ compiler_library(riscv
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRLinkage.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRMachine.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRMemoryReference.cpp
+	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRRegister.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRRealRegister.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRRegisterDependency.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRSnippet.cpp

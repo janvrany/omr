@@ -33,7 +33,6 @@
    #error OMR::RV::Register expected to be a primary connector, but a OMR connector is already defined
 #endif
 
-
 #include "compiler/codegen/OMRRegister.hpp"
 
 class TR_LiveRegisterInfo;
@@ -48,9 +47,29 @@ class OMR_EXTENSIBLE Register: public OMR::Register
    {
    protected:
 
-   Register(uint32_t f=0): OMR::Register(f) {_liveRegisterInfo._liveRegister = NULL;}
-   Register(TR_RegisterKinds rk): OMR::Register(rk)  {_liveRegisterInfo._liveRegister = NULL;}
-   Register(TR_RegisterKinds rk, uint16_t ar): OMR::Register(rk, ar) {_liveRegisterInfo._liveRegister = NULL;}
+   Register(uint32_t f=0): OMR::Register(f)
+      {
+      _liveRegisterInfo._liveRegister = NULL;
+#ifdef DEBUG
+      _id = _lastId++;
+#endif
+      }
+
+   Register(TR_RegisterKinds rk): OMR::Register(rk)
+      {
+      _liveRegisterInfo._liveRegister = NULL;
+#ifdef DEBUG
+      _id = _lastId++;
+#endif
+      }
+
+   Register(TR_RegisterKinds rk, uint16_t ar): OMR::Register(rk, ar)
+      {
+      _liveRegisterInfo._liveRegister = NULL;
+#ifdef DEBUG
+      _id = _lastId++;
+#endif
+      }
 
 
    public:
@@ -63,6 +82,10 @@ class OMR_EXTENSIBLE Register: public OMR::Register
    uint64_t getInterference()           {return _liveRegisterInfo._interference;}
    uint64_t setInterference(uint64_t i) {return (_liveRegisterInfo._interference = i);}
 
+#ifdef DEBUG
+   uint32_t getId() { return _id; }
+#endif
+
    private:
 
    union
@@ -71,7 +94,11 @@ class OMR_EXTENSIBLE Register: public OMR::Register
       uint32_t             _interference; // Real registers that interfere with this register
       } _liveRegisterInfo;
 
+#ifdef DEBUG
+   uint32_t _id;
 
+   static uint32_t _lastId;
+#endif
    };
 
 }

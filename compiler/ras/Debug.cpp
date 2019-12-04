@@ -3047,6 +3047,13 @@ TR_Debug::getName(TR::Register *reg, TR_RegisterSizes size)
          reg->isPlaceholderReg()           ? "D_" : "");
       }
 
+#if defined(TR_TARGET_RISCV) && defined(DEBUG)
+   char *buf = (char *)_comp->trMemory()->allocateHeapMemory(maxPrefixSize + 6 + 11); // max register kind name size plus underscore plus 10-digit reg num plus null terminator
+   uint32_t regNum = reg->getId();
+   sprintf(buf, "%s%s_%04d", prefix, getRegisterKindName(reg->getKind()), regNum);
+   return buf;
+#endif
+
    CS2::HashIndex hashIndex;
    if (_comp->getToStringMap().Locate((void *)reg, hashIndex))
       {
