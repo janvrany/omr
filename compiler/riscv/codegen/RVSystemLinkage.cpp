@@ -790,6 +790,7 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
    const TR::RVLinkageProperties &pp = getProperties();
    TR::RealRegister *sp = cg()->machine()->getRealRegister(pp.getStackPointerRegister());
    TR::RealRegister *ra = cg()->machine()->getRealRegister(TR::RealRegister::ra);
+   TR::SymbolReference *callSymRef = callNode->getSymbolReference();
    TR::Register *target = nullptr;
 
    if (callNode->getOpCode().isCallIndirect())
@@ -819,26 +820,23 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
       {
       generateITYPE(TR::InstOpCode::_jalr, callNode, ra, target, 0, dependencies, cg());
       }
-   else
+   else if (callSymRef->getMethodAddress())
       {
-      TR::SymbolReference *callSymRef = callNode->getSymbolReference();
       /*
        * If the symref points to resolved method symbol, generate indirect call
        * (jalr). This way we avoid jump offset being out of immediate range.
        * This is kind of a hack to support direct calls to runtime helpers without
-       * having proper support for trampolines yet
+       * having proper support for trampolines yet.
        */
-      if (callSymRef->getSymbol()->getResolvedMethodSymbol() != NULL)
-         {
-         target = cg()->allocateRegister();
-         loadConstant64(cg(), callNode, (int64_t)callSymRef->getMethodAddress(), target);
-         generateITYPE(TR::InstOpCode::_jalr, callNode, ra, target, 0, dependencies, cg());
-         }
-      else
-         {
-         generateJTYPE(TR::InstOpCode::_jal, callNode, ra,
+      target = cg()->allocateRegister();
+      loadConstant64(cg(), callNode, (int64_t)callSymRef->getMethodAddress(), target);
+      generateITYPE(TR::InstOpCode::_jalr, callNode, ra, target, 0, dependencies, cg());
+      cg()->stopUsingRegister(target);
+      }
+   else
+      {
+      generateJTYPE(TR::InstOpCode::_jal, callNode, ra,
                (uintptr_t)callSymRef->getMethodAddress(), dependencies, callSymRef, NULL, cg());
-         }
       }
 
    cg()->machine()->setLinkRegisterKilled(true);
@@ -894,10 +892,6 @@ TR::Register *TR::RVSystemLinkage::buildDirectDispatch(TR::Node *callNode)
    if (callNode->getOpCode().isCallIndirect())
       {
       callNode->getFirstChild()->decReferenceCount();
-      }
-   if (!callNode->getOpCode().isCallIndirect() && target)
-      {
-      cg()->stopUsingRegister(target);
       }
    return retReg;
    }
