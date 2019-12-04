@@ -399,13 +399,36 @@ TR_GlobalRegisterNumber OMR::RV::CodeGenerator::getLinkageGlobalRegisterNumber(i
 
 void OMR::RV::CodeGenerator::apply16BitLabelRelativeRelocation(int32_t *cursor, TR::LabelSymbol *label)
    {
-   // for "b.cond" instruction
    TR_ASSERT(label->getCodeLocation(), "Attempt to relocate to a NULL label address!");
 
    intptrj_t distance = (uintptrj_t)label->getCodeLocation() - (uintptrj_t)cursor;
 
-   TR_ASSERT(VALID_SBTYPE_IMM(distance), "Invalid Branch offset out of range");
-   *cursor |= ENCODE_SBTYPE_IMM(distance);
+   if (VALID_SBTYPE_IMM(distance))
+      {
+      *cursor |= ENCODE_SBTYPE_IMM(distance);
+      }
+   else
+      {
+      /*
+       * distance if out of S-type instruction immediate. In this case,
+       * generate in-line trampoline, i.e., change
+       *
+       *  +00 bne x,y,distance
+       *  +04 nop
+       *  +08 nop
+       *  +12 nop
+       *
+       * into
+       *
+       *  +00 bne x,y, +04 (--> +08
+       *  +04 jal zero, +04 --> +12
+       *  +08 jal zero, (distance +- 8)
+       *
+       */
+      *cursor++ |= ENCODE_SBTYPE_IMM(8);
+      *cursor++  = RISCV_UJTYPE(JAL, 0, 8);
+      *cursor++  = RISCV_UJTYPE(JAL, 0, distance - 8);
+      }
    }
 
 void OMR::RV::CodeGenerator::apply16BitLabelRelativeRelocation(int32_t *cursor, TR::LabelSymbol *label, int8_t d, bool isInstrOffset) 

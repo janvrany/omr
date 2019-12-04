@@ -61,6 +61,10 @@
 #define TR_RISCV_UJTYPE(insn, rd, target) \
   ((insn) | ((rd) << OP_SH_RD) | ENCODE_UJTYPE_IMM(target))
 
+#define TR_RISCV_NOP \
+  RISCV_ITYPE(ADDI, 0, 0, 0)
+
+
 // TR::RtypeInstruction:: member functions
 
 bool TR::RtypeInstruction::refsRegister(TR::Register *reg)
@@ -403,11 +407,23 @@ uint8_t *TR::BtypeInstruction::generateBinaryEncoding()
    } else {
            cg()->addRelocation(new (cg()->trHeapMemory()) TR::LabelRelative16BitRelocation(cursor, label));
    }
+   /*
+    * Now, output few NOPs to make space for in-line trampoline
+    * if jump target turns out to be out of jump-range
+    */
+   *++iPtr = TR_RISCV_NOP;
+   *++iPtr = TR_RISCV_NOP;
 
-   cursor += RISCV_INSTRUCTION_LENGTH;
-   setBinaryLength(RISCV_INSTRUCTION_LENGTH);
+   cursor += RISCV_INSTRUCTION_LENGTH * 3;
+   setBinaryLength(RISCV_INSTRUCTION_LENGTH * 3);
    setBinaryEncoding(instructionStart);
    return cursor;
+   }
+
+int32_t TR::BtypeInstruction::estimateBinaryLength(int32_t currentEstimate)
+   {
+   setEstimatedBinaryLength(RISCV_INSTRUCTION_LENGTH*3);
+   return currentEstimate + self()->getEstimatedBinaryLength();
    }
 
 

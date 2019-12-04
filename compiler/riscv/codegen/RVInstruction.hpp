@@ -742,6 +742,14 @@ class BtypeInstruction : public StypeInstruction
     * @return instruction cursor
     */
    virtual uint8_t *generateBinaryEncoding();
+
+   /**
+    * @brief Estimates binary length
+    * @param[in] currentEstimate : current estimated length
+    * @return estimated binary length
+    */
+   virtual int32_t estimateBinaryLength(int32_t currentEstimate);
+
    };
 
 class UtypeInstruction : public TR::Instruction
