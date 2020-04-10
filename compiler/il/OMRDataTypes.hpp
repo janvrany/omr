@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2019 IBM Corp. and others
+ * Copyright (c) 2000, 2020 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -50,6 +50,8 @@ typedef int32_t CASECONST_TYPE;
 
 #define LONG_SHIFT_MASK 63
 #define INT_SHIFT_MASK 31
+#define SHORT_SHIFT_MASK 15
+#define BYTE_SHIFT_MASK 7
 
 /**
  * @name OMRDataTypeFPLimits
