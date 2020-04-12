@@ -120,7 +120,7 @@ def SPECS = [
         'buildSystem' : 'cmake',
         'builds' : [
             [
-                'buildDir' : autoconfBuildDir,
+                'buildDir' : cmakeBuildDir,
                 'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake',
                 'compile' : defaultCompile
             ]
@@ -280,7 +280,7 @@ timestamps {
                 def customWorkspace = WORKSPACE - "/${JOB_NAME}" + "/${workspaceName}"
                 ws(customWorkspace) {
                     try {
-                        timeout(time: 1, unit: 'HOURS') {
+                        timeout(time: 3, unit: 'HOURS') {
                             def tmpDesc = (currentBuild.description) ? currentBuild.description + "<br>" : ""
                             currentBuild.description = tmpDesc + "<a href=${JENKINS_URL}computer/${NODE_NAME}>${NODE_NAME}</a>"
 
