@@ -266,10 +266,11 @@ def SPECS = [
     ]
 ]
 
+spec = SPECS[params.BUILDSPEC]
 timestamps {
     timeout(time: 8, unit: 'HOURS') {
         stage('Queue') {
-            node(SPECS[params.BUILDSPEC].label) {
+            node(spec.label) {
                 /*
                  * Use a custom workspace name.
                  * This is becasue the LIBPATH on z/os includes the build's workspace.
@@ -284,7 +285,7 @@ timestamps {
                             def tmpDesc = (currentBuild.description) ? currentBuild.description + "<br>" : ""
                             currentBuild.description = tmpDesc + "<a href=${JENKINS_URL}computer/${NODE_NAME}>${NODE_NAME}</a>"
 
-                            withEnv(SPECS[params.BUILDSPEC].environment) {
+                            withEnv(spec.environment) {
                                 sh 'printenv'
                                 stage('Get Sources') {
                                     if (params.ghprbPullId) {
@@ -304,15 +305,15 @@ timestamps {
                                     }
                                 }
                                 stage('Build') {
-                                    if (SPECS[params.BUILDSPEC].ccache) {
+                                    if (spec.ccache) {
                                         echo 'Output CCACHE stats before running and clear them'
                                         sh 'ccache -s -z'
                                     }
 
-                                    for (build in SPECS[params.BUILDSPEC].builds) {
+                                    for (build in spec.builds) {
                                         dir("${build.buildDir}") {
                                             echo 'Configure...'
-                                            switch (SPECS[params.BUILDSPEC].buildSystem) {
+                                            switch (spec.buildSystem) {
                                                 case 'cmake':
                                                     sh "cmake ${build.configureArgs} .."
                                                     break
@@ -328,25 +329,25 @@ timestamps {
                                         }
                                     }
 
-                                    if (SPECS[params.BUILDSPEC].ccache) {
+                                    if (spec.ccache) {
                                         echo 'Output CCACHE stats after running'
                                         sh 'ccache -s'
                                     }
                                 }
                                 stage('Test') {
-                                    if (SPECS[params.BUILDSPEC].test) {
+                                    if (spec.test) {
                                         echo 'Sanity Test...'
-                                        switch (SPECS[params.BUILDSPEC].buildSystem) {
+                                        switch (spec.buildSystem) {
                                             case 'cmake':
                                                 dir("${cmakeBuildDir}") {
-                                                    sh "ctest -V ${SPECS[params.BUILDSPEC].testArgs}"
-                                                    if (SPECS[params.BUILDSPEC].junitPublish) {
+                                                    sh "ctest -V ${spec.testArgs}"
+                                                    if (spec.junitPublish) {
                                                         junit '**/*results.xml'
                                                     }
                                                 }
                                                 break
                                             case 'autoconf':
-                                                sh "make test ${SPECS[params.BUILDSPEC].testArgs}"
+                                                sh "make test ${spec.testArgs}"
                                                 break
                                             default:
                                                 error("Unknown buildSystem type")
