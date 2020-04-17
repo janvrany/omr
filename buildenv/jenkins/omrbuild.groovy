@@ -10,12 +10,12 @@ def setBuildStatus(String message, String state, String sha) {
     ]);
 }
 
-def defaultCompile = 'make -j4'
-def autoconfBuildDir = '.'
-def cmakeBuildDir = 'build'
-def workspaceName = 'Build'
+defaultCompile = 'make -j4'
+autoconfBuildDir = '.'
+cmakeBuildDir = 'build'
+workspaceName = 'Build'
 
-def SPECS = [
+SPECS = [
     'aix_ppc-64' : [
         'label' : 'aix && ppc',
         'environment' : [
@@ -266,7 +266,8 @@ def SPECS = [
     ]
 ]
 
-spec = SPECS[params.BUILDSPEC]
+def launch(target) {
+spec = SPECS[target]
 timestamps {
     timeout(time: 8, unit: 'HOURS') {
         stage('Queue') {
@@ -369,3 +370,6 @@ timestamps {
         }
     }
 }
+}
+
+return this
