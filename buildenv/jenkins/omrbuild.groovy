@@ -19,8 +19,7 @@ SPECS = [
         'label' : 'aix && ppc',
         'environment' : [
             'PATH+TOOLS=/home/u0020236/tools',
-            'CCACHE_CPP2=1',
-            'GTEST_COLOR=0'
+            'CCACHE_CPP2=1'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -38,8 +37,7 @@ SPECS = [
     'linux_390-64' : [
         'label': 'Linux && 390',
         'environment' : [
-            'PATH+CCACHE=/usr/lib/ccache/',
-            'GTEST_COLOR=0'
+            'PATH+CCACHE=/usr/lib/ccache/'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -93,8 +91,7 @@ SPECS = [
     'linux_ppc-64_le_gcc' : [
         'label' : 'Linux && PPCLE',
         'environment' : [
-            'PATH+CCACHE=/usr/lib/ccache/',
-            'GTEST_COLOR=0'
+            'PATH+CCACHE=/usr/lib/ccache/'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -151,8 +148,7 @@ SPECS = [
     'linux_x86' : [
         'label' : 'Linux && x86',
         'environment' : [
-            'PATH+CCACHE=/usr/lib/ccache/',
-            'GTEST_COLOR=0'
+            'PATH+CCACHE=/usr/lib/ccache/'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -170,8 +166,7 @@ SPECS = [
     'linux_x86-64' : [
         'label' : 'Linux && x86',
         'environment' : [
-            'PATH+CCACHE=/usr/lib/ccache/',
-            'GTEST_COLOR=0'
+            'PATH+CCACHE=/usr/lib/ccache/'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -209,8 +204,7 @@ SPECS = [
         'label' : 'OSX && x86',
         'environment' : [
             'GTEST_FILTER=-*dump_test_create_dump_*:*NumaSetAffinity:*NumaSetAffinitySuspended:*DeathTest*',
-            'PATH+CCACHE=/usr/local/opt/ccache/libexec',
-            'GTEST_COLOR=0'
+            'PATH+CCACHE=/usr/local/opt/ccache/libexec'
         ],
         'ccache' : true,
         'buildSystem' : 'cmake',
@@ -228,8 +222,7 @@ SPECS = [
     'win_x86-64' : [
         'label' : 'Windows && x86',
         'environment' : [
-            'GTEST_FILTER=-*dump_test_create_dump_*:*NumaSetAffinity:*NumaSetAffinitySuspended:PortSysinfoTest.sysinfo_test_get_tmp3:ThreadExtendedTest.TestOtherThreadCputime',
-            'GTEST_COLOR=0'
+            'GTEST_FILTER=-*dump_test_create_dump_*:*NumaSetAffinity:*NumaSetAffinitySuspended:PortSysinfoTest.sysinfo_test_get_tmp3:ThreadExtendedTest.TestOtherThreadCputime'
         ],
         'ccache' : false,
         'buildSystem' : 'cmake',
@@ -280,7 +273,7 @@ timestamps {
                              * assumption that other platforms either don't use LIBPATH
                              * (e.g, Linux, macOS).
                              */
-                            withEnv(spec.environment + ["LIBPATH+WORKSPACE=${WORKSPACE}"]) {
+                            withEnv(spec.environment + ["LIBPATH+WORKSPACE=${WORKSPACE}", 'GTEST_COLOR=0']) {
                                 sh 'printenv'
                                 stage('Get Sources') {
                                     if (params.ghprbPullId) {
