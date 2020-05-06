@@ -11,11 +11,16 @@ def setBuildStatus(String message, String state, String sha) {
 }
 
 defaultCompile = 'make -j4'
-autoconfBuildDir = '.'
 
 class CMake {
     String buildDir = 'build'
     String configureArgs = '-Wdev -C../cmake/caches/Travis.cmake'
+    String compileCmd = 'make -j4'
+}
+
+class Autotools {
+    String buildDir = '.'
+    String configureArgs = ''
     String compileCmd = 'make -j4'
 }
 
@@ -62,11 +67,9 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'autoconf',
         'builds' : [
-            [
-                'buildDir' : autoconfBuildDir,
-                'configureArgs' : 'SPEC=linux_aarch64',
-                'compileCmd' : defaultCompile
-            ]
+            new Autotools(
+                configureArgs: 'SPEC=linux_aarch64'
+            )
         ],
         'test' : false
     ],
@@ -80,11 +83,9 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'autoconf',
         'builds' : [
-            [
-                'buildDir' : autoconfBuildDir,
-                'configureArgs' : 'SPEC=linux_arm',
-                'compileCmd' : defaultCompile
-            ]
+            new Autotools(
+                configureArgs: 'SPEC=linux_arm'
+            )
         ],
         'test' : false
     ],
@@ -176,11 +177,9 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'autoconf',
         'builds' : [
-            [
-                'buildDir' : autoconfBuildDir,
-                'configureArgs': 'SPEC=linux_x86-64_cmprssptrs PLATFORM=amd64-linux64-gcc HAS_AUTOCONF=1 all',
-                'compileCmd' : defaultCompile
-            ]
+            new Autotools(
+                configureArgs: 'SPEC=linux_x86-64_cmprssptrs PLATFORM=amd64-linux64-gcc HAS_AUTOCONF=1 all'
+            )
         ],
         'test' : true,
         'testArgs' : '',
