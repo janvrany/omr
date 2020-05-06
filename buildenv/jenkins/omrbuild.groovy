@@ -16,7 +16,7 @@ autoconfBuildDir = '.'
 class CMake {
     String buildDir = 'build'
     String configureArgs = '-Wdev -C../cmake/caches/Travis.cmake'
-    String compile = 'make -j4'
+    String compileCmd = 'make -j4'
 }
 
 SPECS = [
@@ -31,7 +31,7 @@ SPECS = [
         'builds' : [
             new CMake(                
                 configureArgs: '-Wdev -DCMAKE_C_COMPILER=xlc_r -DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_XL_CreateExportList="/opt/IBM/xlC/13.1.3/bin/CreateExportList -X64" -DOMR_DDR=OFF -C../cmake/caches/Travis.cmake',
-                compile: 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8'
+                compileCmd: 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8'
             )
         ],
         'test' : true,
@@ -65,7 +65,7 @@ SPECS = [
             [
                 'buildDir' : autoconfBuildDir,
                 'configureArgs' : 'SPEC=linux_aarch64',
-                'compile' : defaultCompile
+                'compileCmd' : defaultCompile
             ]
         ],
         'test' : false
@@ -83,7 +83,7 @@ SPECS = [
             [
                 'buildDir' : autoconfBuildDir,
                 'configureArgs' : 'SPEC=linux_arm',
-                'compile' : defaultCompile
+                'compileCmd' : defaultCompile
             ]
         ],
         'test' : false
@@ -144,7 +144,7 @@ SPECS = [
         'builds' : [
             new CMake(
                 configureArgs: '-Wdev -G Ninja -DOMR_ENV_DATA32=ON -DOMR_DDR=OFF -DOMR_JITBUILDER=OFF -C../cmake/caches/Travis.cmake',
-                compile: 'ninja'
+                compileCmd: 'ninja'
             )
         ],
         'test' : true,
@@ -179,7 +179,7 @@ SPECS = [
             [
                 'buildDir' : autoconfBuildDir,
                 'configureArgs': 'SPEC=linux_x86-64_cmprssptrs PLATFORM=amd64-linux64-gcc HAS_AUTOCONF=1 all',
-                'compile' : defaultCompile
+                'compileCmd' : defaultCompile
             ]
         ],
         'test' : true,
@@ -211,7 +211,7 @@ SPECS = [
         'builds' : [
             new CMake(
                 configureArgs: '-Wdev -G "Visual Studio 11 2012 Win64" -C../cmake/caches/AppVeyor.cmake',
-                compile: 'cmake --build . -- /m'
+                compileCmd: 'cmake --build . -- /m'
             )
         ],
         'test' : true,
@@ -292,7 +292,7 @@ timestamps {
                                             }
 
                                             echo 'Compile...'
-                                            sh "${build.compile}"
+                                            sh "${build.compileCmd}"
                                         }
                                     }
 
