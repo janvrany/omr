@@ -12,7 +12,12 @@ def setBuildStatus(String message, String state, String sha) {
 
 defaultCompile = 'make -j4'
 autoconfBuildDir = '.'
-cmakeBuildDir = 'build'
+
+class CMake {
+    String buildDir = 'build'
+    String configureArgs = '-Wdev -C../cmake/caches/Travis.cmake'
+    String compile = 'make -j4'
+}
 
 SPECS = [
     'aix_ppc-64' : [
@@ -24,11 +29,10 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -DCMAKE_C_COMPILER=xlc_r -DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_XL_CreateExportList="/opt/IBM/xlC/13.1.3/bin/CreateExportList -X64" -DOMR_DDR=OFF -C../cmake/caches/Travis.cmake',
-                'compile' : 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8'
-            ]
+            new CMake(                
+                configureArgs: '-Wdev -DCMAKE_C_COMPILER=xlc_r -DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_XL_CreateExportList="/opt/IBM/xlC/13.1.3/bin/CreateExportList -X64" -DOMR_DDR=OFF -C../cmake/caches/Travis.cmake',
+                compile: 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8'
+            )
         ],
         'test' : true,
         'testArgs' : '',
@@ -42,11 +46,7 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake',
-                'compile' : defaultCompile
-            ]
+            new CMake()
         ],
         'test' : true,
         'testArgs' : '',
@@ -96,11 +96,7 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake',
-                'compile' : defaultCompile
-            ]
+            new CMake()
         ],
         'test' : true,
         'testArgs' : '',
@@ -114,11 +110,7 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake',
-                'compile' : defaultCompile
-            ]
+            new CMake()
         ],
         'test' : true,
         'testArgs' : '',
@@ -132,16 +124,13 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : 'build_native',
-                'configureArgs' : '-DOMR_THREAD=OFF -DOMR_PORT=OFF -DOMR_OMRSIG=OFF -DOMR_GC=OFF -DOMR_FVTEST=OFF',
-                'compile' : defaultCompile
-            ],
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_FIND_ROOT_PATH=${CROSS_SYSROOT_RISCV64} -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build_native/tools/ImportTools.cmake',
-                'compile' : defaultCompile
-            ]
+            new CMake(
+                buildDir: 'build_native',
+                configureArgs: '-DOMR_THREAD=OFF -DOMR_PORT=OFF -DOMR_OMRSIG=OFF -DOMR_GC=OFF -DOMR_FVTEST=OFF',
+            ),
+            new CMake(
+                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_FIND_ROOT_PATH=${CROSS_SYSROOT_RISCV64} -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build_native/tools/ImportTools.cmake'
+            )
         ],
         'test' : false
     ],
@@ -153,11 +142,10 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -G Ninja -DOMR_ENV_DATA32=ON -DOMR_DDR=OFF -DOMR_JITBUILDER=OFF -C../cmake/caches/Travis.cmake',
-                'compile' : 'ninja'
-            ]
+            new CMake(
+                configureArgs: '-Wdev -G Ninja -DOMR_ENV_DATA32=ON -DOMR_DDR=OFF -DOMR_JITBUILDER=OFF -C../cmake/caches/Travis.cmake',
+                compile: 'ninja'
+            )
         ],
         'test' : true,
         'testArgs' : '',
@@ -171,11 +159,9 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake -DOMR_OPT_CUDA=ON -DOMR_CUDA_HOME=/usr/local/cuda',
-                'compile' : defaultCompile
-            ]
+            new CMake(
+                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DOMR_OPT_CUDA=ON -DOMR_CUDA_HOME=/usr/local/cuda'
+            )
         ],
         'test' : true,
         'testArgs' : '',
@@ -209,11 +195,7 @@ SPECS = [
         'ccache' : true,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake',
-                'compile' : defaultCompile
-            ]
+            new CMake()
         ],
         'test' : true,
         'testArgs' : '',
@@ -227,11 +209,10 @@ SPECS = [
         'ccache' : false,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -G "Visual Studio 11 2012 Win64" -C../cmake/caches/AppVeyor.cmake',
-                'compile' : 'cmake --build . -- /m'
-            ]
+            new CMake(
+                configureArgs: '-Wdev -G "Visual Studio 11 2012 Win64" -C../cmake/caches/AppVeyor.cmake',
+                compile: 'cmake --build . -- /m'
+            )
         ],
         'test' : true,
         'testArgs' : '-C Debug -j1',
@@ -244,11 +225,9 @@ SPECS = [
         'ccache' : false,
         'buildSystem' : 'cmake',
         'builds' : [
-            [
-                'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_C_COMPILER=/bin/c89 -DCMAKE_CXX_COMPILER=/bin/xlc -DOMR_DDR=OFF -DOMR_THR_FORK_SUPPORT=0',
-                'compile' : defaultCompile
-            ]
+            new CMake(
+                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_C_COMPILER=/bin/c89 -DCMAKE_CXX_COMPILER=/bin/xlc -DOMR_DDR=OFF -DOMR_THR_FORK_SUPPORT=0'
+            )
         ],
         'test' : true,
         'testArgs' : '',
@@ -327,7 +306,7 @@ timestamps {
                                         echo 'Sanity Test...'
                                         switch (spec.buildSystem) {
                                             case 'cmake':
-                                                dir("${cmakeBuildDir}") {
+                                                dir("${spec.builds.last().buildDir}") {
                                                     sh "ctest -V ${spec.testArgs}"
                                                     if (spec.junitPublish) {
                                                         junit '**/*results.xml'
