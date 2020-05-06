@@ -13,14 +13,12 @@ def setBuildStatus(String message, String state, String sha) {
 defaultCompile = 'make -j4'
 autoconfBuildDir = '.'
 cmakeBuildDir = 'build'
-workspaceName = 'Build'
 
 SPECS = [
     'aix_ppc-64' : [
         'label' : 'aix && ppc',
         'environment' : [
             'PATH+TOOLS=/home/u0020236/tools',
-            'LIBPATH=.',
             'CCACHE_CPP2=1',
             'GTEST_COLOR=0'
         ],
@@ -249,7 +247,6 @@ SPECS = [
     'zos_390-64' : [
         'label' : 'zOS && 390',
         'environment' : [
-            "LIBPATH+EXTRA=/openzdk/jenkins/workspace/${workspaceName}/build"
         ],
         'ccache' : false,
         'buildSystem' : 'cmake',
@@ -272,21 +269,18 @@ timestamps {
     timeout(time: 8, unit: 'HOURS') {
         stage('Queue') {
             node(spec.label) {
-                /*
-                 * Use a custom workspace name.
-                 * This is becasue the LIBPATH on z/os includes the build's workspace.
-                 * Since we cannot add a variable to the 'environment' in the SPECS, as
-                 * it will get evaluated early, we'll use a custom ws in order to
-                 * hardcode the value in the SPECS.
-                 */
-                def customWorkspace = WORKSPACE - "/${JOB_NAME}" + "/${workspaceName}"
-                ws(customWorkspace) {
+                ws() {
                     try {
                         timeout(time: 3, unit: 'HOURS') {
                             def tmpDesc = (currentBuild.description) ? currentBuild.description + "<br>" : ""
                             currentBuild.description = tmpDesc + "<a href=${JENKINS_URL}computer/${NODE_NAME}>${NODE_NAME}</a>"
-
-                            withEnv(spec.environment) {
+                            /*
+                             * ZOS and AIX needs to to add workspace to LIBPATH. Here we add
+                             * it to LIBPATH unconditionally on all platforms on the
+                             * assumption that other platforms either don't use LIBPATH
+                             * (e.g, Linux, macOS).
+                             */
+                            withEnv(spec.environment + ["LIBPATH+WORKSPACE=${WORKSPACE}"]) {
                                 sh 'printenv'
                                 stage('Get Sources') {
                                     if (params.ghprbPullId) {
