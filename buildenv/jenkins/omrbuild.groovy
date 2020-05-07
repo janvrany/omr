@@ -10,44 +10,48 @@ def setBuildStatus(String message, String state, String sha) {
     ]);
 }
 
-defaultCompile = 'make -j4'
-
 class CMake {
-    String buildDir = 'build'
-    String configureArgs = '-Wdev -C../cmake/caches/Travis.cmake'
-    String compileCmd = 'make -j4'
+    def buildDir = 'build'
+    def configureArgs = '-Wdev -C../cmake/caches/Travis.cmake'
 
-    def configure(steps) {
+    def configure = {
         steps.sh "cmake ${configureArgs} .."
     }
 
-    def compile(steps) {
-        steps.sh compileCmd
+    def compile = {
+        steps.sh "make -j4"
     }
 
-    def test(steps) {
+    def test = {
         steps.sh "ctest -V"
         steps.junit '**/*results.xml'
     }
+
+    def static steps = null;
 }
 
-class Autotools {
-    String buildDir = '.'
-    String configureArgs = ''
-    String compileCmd = 'make -j4'
+CMake.steps = this;
 
-    def configure(steps) {
+class Autotools {
+    def buildDir = '.'
+    def configureArgs = ''
+
+    def configure = {
         steps.sh "make -f run_configure.mk OMRGLUE=./example/glue ${configureArgs}"
     }
 
-    def compile(steps) {
-        steps.sh compileCmd
+    def compile = {
+        steps.sh "make -j4"
     }
 
-    def test(steps) {
+    def test = {
         steps.sh "make test"
     }
+
+    def static steps = null;
 }
+
+Autotools.steps = this;
 
 SPECS = [
     'aix_ppc-64' : [
@@ -60,7 +64,7 @@ SPECS = [
         'builds' : [
             new CMake(                
                 configureArgs: '-Wdev -DCMAKE_C_COMPILER=xlc_r -DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_XL_CreateExportList="/opt/IBM/xlC/13.1.3/bin/CreateExportList -X64" -DOMR_DDR=OFF -C../cmake/caches/Travis.cmake',
-                compileCmd: 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8'
+                compile: { sh 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8' }
             )
         ],
     ],
@@ -84,12 +88,9 @@ SPECS = [
         'ccache' : true,
         'builds' : [
             new Autotools(
-                configureArgs: 'SPEC=linux_aarch64'
-            ) {
-                def test(steps) {
-                    step.echo "Skip tests as this is a cross-compilation"
-                }
-            }
+                configureArgs: 'SPEC=linux_aarch64',
+                test: { echo "Skip tests as this is a cross-compilation" }
+            )
         ],
     ],
     'linux_arm' : [
@@ -102,12 +103,9 @@ SPECS = [
         'ccache' : true,
         'builds' : [
             new Autotools(
-                configureArgs: 'SPEC=linux_arm'
-            ) {
-                def test(steps) {
-                    step.echo "Skip tests as this is a cross-compilation"
-                }
-            }
+                configureArgs: 'SPEC=linux_arm',
+                test: { echo "Skip tests as this is a cross-compilation" }
+            )
         ],
     ],
     'linux_ppc-64_le_gcc' : [
@@ -142,12 +140,9 @@ SPECS = [
                 configureArgs: '-DOMR_THREAD=OFF -DOMR_PORT=OFF -DOMR_OMRSIG=OFF -DOMR_GC=OFF -DOMR_FVTEST=OFF',
             ),
             new CMake(
-                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_FIND_ROOT_PATH=${CROSS_SYSROOT_RISCV64} -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build_native/tools/ImportTools.cmake'
-            ) {
-                def test(steps) {
-                    step.echo "Skip tests as this is a cross-compilation"
-                }
-            }
+                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_FIND_ROOT_PATH=${CROSS_SYSROOT_RISCV64} -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build_native/tools/ImportTools.cmake',
+                test: { echo "Skip tests as this is a cross-compilation" }
+            )
         ],
     ],
     'linux_x86' : [
@@ -158,8 +153,12 @@ SPECS = [
         'ccache' : true,
         'builds' : [
             new CMake(
+                /*
+                 * Here we use ninja to build rather than make. The reason is
+                 * to test whether it works with ninja as it is more strict
+                 */
                 configureArgs: '-Wdev -G Ninja -DOMR_ENV_DATA32=ON -DOMR_DDR=OFF -DOMR_JITBUILDER=OFF -C../cmake/caches/Travis.cmake',
-                compileCmd: 'ninja'
+                compile: { sh 'ninja' }
             )
         ],
     ],
@@ -208,12 +207,9 @@ SPECS = [
         'builds' : [
             new CMake(
                 configureArgs: '-Wdev -G "Visual Studio 11 2012 Win64" -C../cmake/caches/AppVeyor.cmake',
-                compileCmd: 'cmake --build . -- /m',
-            ) {
-                def test(steps) {
-                    steps.sh "ctest -V -C Debug -j1"
-                }
-            }
+                compile: { sh 'cmake --build . -- /m' },
+                test: { sh "ctest -V -C Debug -j1" }
+            )
         ],
     ],
     'zos_390-64' : [
@@ -223,16 +219,13 @@ SPECS = [
         'ccache' : false,
         'builds' : [
             new CMake(
-                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_C_COMPILER=/bin/c89 -DCMAKE_CXX_COMPILER=/bin/xlc -DOMR_DDR=OFF -DOMR_THR_FORK_SUPPORT=0'
-            ) {
-                def test(steps) {
-                    /*
-                     * Run tests but don't record results since files
-                     * are in ebcdic and need to be recoded. See PR #5060.
-                     */
-                    steps.sh "ctest -V"
-                }
-            }
+                configureArgs: '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_C_COMPILER=/bin/c89 -DCMAKE_CXX_COMPILER=/bin/xlc -DOMR_DDR=OFF -DOMR_THR_FORK_SUPPORT=0',
+                /*
+                 * Run tests but don't record results since files
+                 * are in ebcdic and need to be recoded. See PR #5060.
+                 */
+                test: { sh "ctest -V" }
+            )
         ],
     ]
 ]
