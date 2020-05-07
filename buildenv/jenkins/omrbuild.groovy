@@ -62,7 +62,7 @@ SPECS = [
         ],
         'ccache' : true,
         'builds' : [
-            new CMake(                
+            new CMake(
                 configureArgs: '-Wdev -DCMAKE_C_COMPILER=xlc_r -DCMAKE_CXX_COMPILER=xlC_r -DCMAKE_XL_CreateExportList="/opt/IBM/xlC/13.1.3/bin/CreateExportList -X64" -DOMR_DDR=OFF -C../cmake/caches/Travis.cmake',
                 compile: { sh 'export CCACHE_EXTRAFILES="$PWD/omrcfg.h" && make -j8' }
             )
@@ -304,6 +304,15 @@ timestamps {
         }
     }
 }
+}
+
+/*
+ * Following is here to support both, old-style pipelines
+ * (buildenv/jenkins/jobs/builds/* and buildenv/jenkins/jobs/pull-requests/*)
+ * and new-style pipeline (omrbuild.groovy with BUILDSPEC param)
+ */
+if (params.BUILDSPEC != null) {
+    launch(params.BUILDSPEC)
 }
 
 return this
