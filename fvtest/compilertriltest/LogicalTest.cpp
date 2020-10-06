@@ -98,7 +98,7 @@ TEST_P(Int16LogicalUnary, UsingConst) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120,
+    Tril::format(inputTrees, 120,
         "(method return=Int16"
         "  (block"
         "    (ireturn"
@@ -133,7 +133,7 @@ TEST_P(Int16LogicalUnary, UsingLoadParam) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120,
+    Tril::format(inputTrees, 120,
         "(method return=Int16 args=[Int16]"
         "  (block"
         "    (ireturn"
@@ -173,7 +173,7 @@ TEST_P(Int32LogicalUnary, UsingConst) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120, "(method return=Int32 (block (ireturn (%s (iconst %d) ) )))", param.opcode.c_str(), param.value);
+    Tril::format(inputTrees, 120, "(method return=Int32 (block (ireturn (%s (iconst %d) ) )))", param.opcode.c_str(), param.value);
     auto trees = parseString(inputTrees);
 
     ASSERT_NOTNULL(trees);
@@ -198,7 +198,7 @@ TEST_P(Int32LogicalUnary, UsingLoadParam) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120, "(method return=Int32 args=[Int32] (block (ireturn (%s (iload parm=0) ) )))", param.opcode.c_str());
+    Tril::format(inputTrees, 120, "(method return=Int32 args=[Int32] (block (ireturn (%s (iload parm=0) ) )))", param.opcode.c_str());
 
     auto trees = parseString(inputTrees);
 
@@ -226,7 +226,7 @@ TEST_P(Int32LogicalBinary, UsingConst) {
     auto param = TRTest::to_struct(GetParam());
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120, "(method return=Int32 (block (ireturn (%s (iconst %d) (iconst %d)) )))", param.opcode.c_str(), param.lhs, param.rhs);
+    Tril::format(inputTrees, 120, "(method return=Int32 (block (ireturn (%s (iconst %d) (iconst %d)) )))", param.opcode.c_str(), param.lhs, param.rhs);
     auto trees = parseString(inputTrees);
 
     ASSERT_NOTNULL(trees);
@@ -245,7 +245,7 @@ TEST_P(Int32LogicalBinary, UsingLoadParam) {
     auto param = TRTest::to_struct(GetParam());
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120, "(method return=Int32 args=[Int32, Int32] (block (ireturn (%s (iload parm=0) (iload parm=1)) )))", param.opcode.c_str());
+    Tril::format(inputTrees, 120, "(method return=Int32 args=[Int32, Int32] (block (ireturn (%s (iload parm=0) (iload parm=1)) )))", param.opcode.c_str());
 
     auto trees = parseString(inputTrees);
 
@@ -273,7 +273,7 @@ TEST_P(Int64LogicalBinary, UsingConst) {
     auto param = TRTest::to_struct(GetParam());
 
     char inputTrees[160] = {0};
-    std::snprintf(inputTrees, 160, 
+    Tril::format(inputTrees, 160, 
         "(method return=Int64"
         "  (block"
         "    (lreturn"
@@ -299,7 +299,7 @@ TEST_P(Int64LogicalBinary, UsingLoadParam) {
     auto param = TRTest::to_struct(GetParam());
 
     char inputTrees[160] = {0};
-    std::snprintf(inputTrees, 160, 
+    Tril::format(inputTrees, 160, 
         "(method return=Int64 args=[Int64, Int64]"
         "  (block"
         "    (lreturn"
@@ -341,7 +341,7 @@ TEST_P(Int64LogicalUnary, UsingConst) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120,
+    Tril::format(inputTrees, 120,
         "(method return=Int64"
         "  (block"
         "    (lreturn"
@@ -375,7 +375,7 @@ TEST_P(Int64LogicalUnary, UsingLoadParam) {
     }
 
     char inputTrees[120] = {0};
-    std::snprintf(inputTrees, 120,
+    Tril::format(inputTrees, 120,
         "(method return=Int64 args=[Int64]"
         "  (block"
         "    (lreturn"

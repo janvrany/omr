@@ -28,8 +28,8 @@ int32_t oracleBoracle(int32_t x) { return x + 1123; } // Randomish number to avo
 
 TEST_F(CallTest, icallOracle) { 
     char inputTrees[200] = {0};
-    const auto format_string = "(method return=Int32 args=[Int32] (block (ireturn (icall address=0x%jX args=[Int32] (iload parm=0)) )  ))";
-    std::snprintf(inputTrees, 200, format_string, reinterpret_cast<uintmax_t>(&oracleBoracle));
+    const auto format_string = "(method return=Int32 args=[Int32] (block (ireturn (icall address=0x%X args=[Int32] (iload parm=0)) )  ))";
+    Tril::format(inputTrees, 200, format_string, reinterpret_cast<void*>(&oracleBoracle));
     auto trees = parseString(inputTrees);
 
     ASSERT_NOTNULL(trees) << "Trees failed to parse\n" << inputTrees;

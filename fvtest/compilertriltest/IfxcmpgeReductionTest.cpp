@@ -97,7 +97,7 @@ TEST_P(Int8ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ifbcmpge target=\"t\""
@@ -143,7 +143,7 @@ TEST_P(UInt8ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ifbucmpge target=\"t\""
@@ -189,7 +189,7 @@ TEST_P(Int16ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ifscmpge target=\"t\""
@@ -235,7 +235,7 @@ TEST_P(UInt16ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ifsucmpge target=\"t\""
@@ -279,7 +279,7 @@ TEST_P(Int32ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ificmpge target=\"t\""
@@ -322,7 +322,7 @@ TEST_P(UInt32ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int32]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (ifiucmpge target=\"t\""
@@ -365,7 +365,7 @@ TEST_P(Int64ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int64]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (iflcmpge target=\"t\""
@@ -408,7 +408,7 @@ TEST_P(UInt64ReductionTest, Reduction)
    auto param = to_struct(GetParam());
 
    char inputTrees[600] = {0};
-   std::snprintf(inputTrees, sizeof(inputTrees),
+   Tril::format(inputTrees, sizeof(inputTrees),
          "(method return=Int32 args=[Int64]"
          "  (block name=\"b\" fallthrough=\"f\""
          "    (iflucmpge target=\"t\""
