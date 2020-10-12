@@ -204,6 +204,12 @@ TEST(FormatTest, IgnorePrefixes) {
    Tril::format(buffer, sizeof(buffer), "%lld", 1);
    ASSERT_STREQ(buffer, "1");
 
+   Tril::format(buffer, sizeof(buffer), "%hd", 1);
+   ASSERT_STREQ(buffer, "1");
+
+   Tril::format(buffer, sizeof(buffer), "%hhd", 1);
+   ASSERT_STREQ(buffer, "1");
+
    Tril::format(buffer, sizeof(buffer), "%jX", (char*)1);
    ASSERT_STREQ(buffer, "1");
 }

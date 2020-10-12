@@ -147,12 +147,18 @@ inline void format(char* dst, size_t size, const char *fmt, V value, Rest... res
          else
             {
             /*
-             * Ignore l, ll and j prefixes
+             * Ignore l, ll, h, hh and j prefixes
              */
             if (*fmt == 'l')
                {
                fmt++;
                if (*fmt == 'l')
+                  fmt++;
+               }
+            else if (*fmt == 'h')
+               {
+               fmt++;
+               if (*fmt == 'h')
                   fmt++;
                }
             else if (*fmt == 'j')
