@@ -34,6 +34,7 @@ def setBuildStatus(String message, String state, String sha) {
 
 def defaultCompile = 'make -j4'
 def defaultReference = '${HOME}/gitcache'
+def defaultTestCmd = 'cmake -V'
 def autoconfBuildDir = '.'
 def cmakeBuildDir = 'build'
 def workspaceName = 'Build'
@@ -58,6 +59,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -78,6 +80,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -136,6 +139,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -155,6 +159,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -164,21 +169,24 @@ def SPECS = [
         'environment' : [
             'PATH+CCACHE=/usr/lib/ccache/'
         ],
-        'ccache' : true,
+        'ccache' : false,
         'buildSystem' : 'cmake',
         'builds' : [
             [
-                'buildDir' : 'build_native',
+                'buildDir' : 'build-native',
                 'configureArgs' : '-DOMR_THREAD=OFF -DOMR_PORT=OFF -DOMR_OMRSIG=OFF -DOMR_GC=OFF -DOMR_FVTEST=OFF',
                 'compile' : defaultCompile
             ],
             [
                 'buildDir' : cmakeBuildDir,
-                'configureArgs' : '-Wdev -C../cmake/caches/Travis.cmake -DCMAKE_FIND_ROOT_PATH=${CROSS_SYSROOT_RISCV64} -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build_native/tools/ImportTools.cmake',
+                'configureArgs' : 'cmake .. -Wdev -DCMAKE_EXPORT_COMPILE_COMMANDS=ON -DOMR_COMPILER=ON -DOMR_TEST_COMPILER=ON -DOMR_JITBUILDER=ON -DOMR_JITBUILDER_TEST=ON -DCMAKE_FIND_ROOT_PATH=/home/jenkins/riscv-debian/rootfs -DCMAKE_TOOLCHAIN_FILE=../cmake/toolchains/riscv64-linux-cross.cmake -DOMR_TOOLS_IMPORTFILE=../build-native/tools/ImportTools.cmake',
                 'compile' : defaultCompile
             ]
         ],
-        'test' : false
+        'test' : true,
+        'testCmd' : '~/qemu/build/qemu-riscv64 -L ~/riscv-debian/rootfs ./fvtest/compilertriltest/comptest',
+        'testArgs' : '',
+        'junitPublish' : true
     ],
     'linux_x86' : [
         'label' : 'Linux && x86',
@@ -197,6 +205,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -217,6 +226,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -237,6 +247,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -258,6 +269,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : true
     ],
@@ -278,6 +290,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '-C Debug -j1',
         'junitPublish' : true
     ],
@@ -297,6 +310,7 @@ def SPECS = [
             ]
         ],
         'test' : true,
+        'testCmd' : defaultTestCmd,
         'testArgs' : '',
         'junitPublish' : false
     ]
@@ -375,7 +389,7 @@ timestamps {
                                         switch (SPECS[params.BUILDSPEC].buildSystem) {
                                             case 'cmake':
                                                 dir("${cmakeBuildDir}") {
-                                                    sh "ctest -V ${SPECS[params.BUILDSPEC].testArgs}"
+                                                    sh "${SPECS[params.BUILDSPEC].testCmd} ${SPECS[params.BUILDSPEC].testArgs}"
                                                     if (SPECS[params.BUILDSPEC].junitPublish) {
                                                         junit '**/*results.xml'
                                                     }
