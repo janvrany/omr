@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019, 2020 IBM Corp. and others
+ * Copyright (c) 2019, 2021 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -40,6 +40,8 @@ namespace OMR { typedef OMR::RV::Linkage LinkageConnector; }
 #include "codegen/Register.hpp"
 #include "env/TRMemory.hpp"
 
+#include <string.h> // TODO: remove once linkage props are made static
+
 class TR_FrontEnd;
 namespace TR { class AutomaticSymbol; }
 namespace TR { class CodeGenerator; }
@@ -77,7 +79,7 @@ class RVMemoryArgument
 #define FloatReturn                 0x08
 #define FloatArgument               0x10
 #define CallerAllocatesBackingStore 0x20
-#define RV_Reserved              0x40
+#define RV_Reserved                 0x40
 
 #define FOR_EACH_REGISTER(machine, block)                                        \
    for (int regNum = TR::RealRegister::x0; regNum <= TR::RealRegister::x31; regNum++) \
@@ -292,9 +294,18 @@ struct RVLinkageProperties
    int32_t getOffsetToFirstLocal() const {return _offsetToFirstLocal;}
 
    uint32_t getNumberOfDependencyGPRegisters() const {return _numberOfDependencyGPRegisters;}
+
+   /**
+    * @brief Initialize derived properties from register flags. This *must* be called
+    * after _registerFlags are populated.
+    */
+   void initialize();
+
+   // TODO: remove once linkage props are made static
+   RVLinkageProperties() { memset(this, 0, sizeof(this)); }
    };
 
-}
+}; // namespace TR
 
 namespace OMR
 {
