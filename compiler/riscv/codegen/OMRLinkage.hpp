@@ -40,8 +40,6 @@ namespace OMR { typedef OMR::RV::Linkage LinkageConnector; }
 #include "codegen/Register.hpp"
 #include "env/TRMemory.hpp"
 
-#include <string.h> // TODO: remove once linkage props are made static
-
 class TR_FrontEnd;
 namespace TR { class AutomaticSymbol; }
 namespace TR { class CodeGenerator; }
@@ -300,11 +298,7 @@ struct RVLinkageProperties
     * after _registerFlags are populated.
     */
    void initialize();
-
-   // TODO: remove once linkage props are made static
-   RVLinkageProperties() { memset(this, 0, sizeof(this)); }
    };
-
 }; // namespace TR
 
 namespace OMR
