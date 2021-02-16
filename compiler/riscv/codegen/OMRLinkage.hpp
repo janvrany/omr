@@ -77,7 +77,7 @@ class RVMemoryArgument
 #define FloatReturn                 0x08
 #define FloatArgument               0x10
 #define CallerAllocatesBackingStore 0x20
-#define RV_Reserved                 0x40
+#define Reserved                    0x40
 
 #define FOR_EACH_REGISTER(machine, block)                                        \
    for (int regNum = TR::RealRegister::x0; regNum <= TR::RealRegister::x31; regNum++) \
@@ -95,7 +95,7 @@ class RVMemoryArgument
 
 #define FOR_EACH_RESERVED_REGISTER(machine, props, block)                        \
    FOR_EACH_REGISTER(machine,                                                    \
-   if (props._registerFlags[(TR::RealRegister::RegNum)regNum] & RV_Reserved)     \
+   if (props._registerFlags[(TR::RealRegister::RegNum)regNum] & Reserved)     \
       { block; }                                                                 \
    )
 

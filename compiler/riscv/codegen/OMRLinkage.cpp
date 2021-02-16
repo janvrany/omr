@@ -43,7 +43,7 @@ void TR::RVLinkageProperties::initialize()
 
    for (auto regNum = TR::RealRegister::FirstGPR; regNum <= TR::RealRegister::LastGPR; regNum++)
       {
-      if (_registerFlags[regNum] & RV_Reserved)
+      if (_registerFlags[regNum] & Reserved)
          {
          _numAllocatableIntegerRegisters--;
          }
@@ -62,7 +62,7 @@ void TR::RVLinkageProperties::initialize()
 
    for (auto regNum = TR::RealRegister::FirstFPR; regNum <= TR::RealRegister::LastFPR; regNum++)
          {
-         if (_registerFlags[regNum] & RV_Reserved)
+         if (_registerFlags[regNum] & Reserved)
             {
             _numAllocatableFloatRegisters--;
             }

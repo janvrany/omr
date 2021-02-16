@@ -58,13 +58,13 @@ TR::RVSystemLinkageProperties::RVSystemLinkageProperties()
    {
    _properties = IntegersInRegisters|FloatsInRegisters|RightToLeft;
 
-   _registerFlags[TR::RealRegister::zero] = Preserved|RV_Reserved; // zero
-   _registerFlags[TR::RealRegister::ra]   = Preserved|RV_Reserved; // return address
-   _registerFlags[TR::RealRegister::sp]   = Preserved|RV_Reserved; // sp
-   _registerFlags[TR::RealRegister::gp]   = Preserved|RV_Reserved; // gp
-   _registerFlags[TR::RealRegister::tp]   = Preserved|RV_Reserved; // tp
+   _registerFlags[TR::RealRegister::zero] = Preserved|Reserved; // zero
+   _registerFlags[TR::RealRegister::ra]   = Preserved|Reserved; // return address
+   _registerFlags[TR::RealRegister::sp]   = Preserved|Reserved; // sp
+   _registerFlags[TR::RealRegister::gp]   = Preserved|Reserved; // gp
+   _registerFlags[TR::RealRegister::tp]   = Preserved|Reserved; // tp
 
-   _registerFlags[TR::RealRegister::t0]   = Preserved|RV_Reserved; // fp
+   _registerFlags[TR::RealRegister::t0]   = Preserved|Reserved; // fp
    _registerFlags[TR::RealRegister::t1]   = 0;
    _registerFlags[TR::RealRegister::t2]   = 0;
 
