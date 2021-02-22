@@ -95,8 +95,8 @@ TR::PPCSystemLinkage::PPCSystemLinkage(TR::CodeGenerator *cg)
 
    _properties._registerFlags[TR::RealRegister::NoReg] = 0;
    _properties._registerFlags[TR::RealRegister::gr0]   = 0;
-   _properties._registerFlags[TR::RealRegister::gr1]   = Preserved|PPC_Reserved; // system sp
-   _properties._registerFlags[TR::RealRegister::gr2]   = Preserved|PPC_Reserved; // TOC/system reserved
+   _properties._registerFlags[TR::RealRegister::gr1]   = Preserved|Reserved; // system sp
+   _properties._registerFlags[TR::RealRegister::gr2]   = Preserved|Reserved; // TOC/system reserved
    _properties._registerFlags[TR::RealRegister::gr3]   = IntegerReturn|IntegerArgument;
    _properties._registerFlags[TR::RealRegister::gr4]   = IntegerReturn|IntegerArgument;
 
@@ -109,7 +109,7 @@ TR::PPCSystemLinkage::PPCSystemLinkage(TR::CodeGenerator *cg)
    _properties._registerFlags[TR::RealRegister::gr11] = 0;
    _properties._registerFlags[TR::RealRegister::gr12] = 0;
    if (cg->comp()->target().is64Bit())
-      _properties._registerFlags[TR::RealRegister::gr13] = Preserved|PPC_Reserved; // system
+      _properties._registerFlags[TR::RealRegister::gr13] = Preserved|Reserved; // system
    else
       _properties._registerFlags[TR::RealRegister::gr13] = Preserved;
 

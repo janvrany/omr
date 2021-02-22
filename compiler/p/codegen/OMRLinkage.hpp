@@ -82,7 +82,7 @@ class PPCMemoryArgument
 #define FloatReturn                 0x08
 #define FloatArgument               0x10
 #define CallerAllocatesBackingStore 0x20
-#define PPC_Reserved                0x40
+#define Reserved                    0x40
 
 struct PPCLinkageProperties
    {
@@ -325,7 +325,7 @@ struct PPCLinkageProperties
 
    uint32_t getReserved(TR::RealRegister::RegNum regNum) const
       {
-      return (_registerFlags[regNum] & PPC_Reserved);
+      return (_registerFlags[regNum] & Reserved);
       }
 
    // get the indexth vector argument register
