@@ -230,6 +230,19 @@ struct RVLinkageProperties
       return _returnRegisters[_firstIntegerReturnRegister];
       }
 
+   // for 32-bit use only
+   TR::RealRegister::RegNum getLongLowReturnRegister() const
+      {
+      return _returnRegisters[1];
+      }
+
+   // for 32-bit use only
+   TR::RealRegister::RegNum getLongHighReturnRegister() const
+      {
+      return _returnRegisters[0];
+      }
+
+   // for 64-bit use only
    TR::RealRegister::RegNum getLongReturnRegister() const
       {
       return _returnRegisters[_firstIntegerReturnRegister];

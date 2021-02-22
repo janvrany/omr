@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corp. and others
+ * Copyright (c) 2000, 2021 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -92,29 +92,13 @@ struct PPCLinkageProperties
    uint8_t _firstIntegerArgumentRegister;
    uint8_t _numFloatArgumentRegisters;
    uint8_t _firstFloatArgumentRegister;
-   uint8_t _numVectorArgumentRegisters;
-   uint8_t _firstVectorArgumentRegister;
    TR::RealRegister::RegNum _argumentRegisters[TR::RealRegister::NumRegisters];
    uint8_t _firstIntegerReturnRegister;
    uint8_t _firstFloatReturnRegister;
-   uint8_t _firstVectorReturnRegister;
    TR::RealRegister::RegNum _returnRegisters[TR::RealRegister::NumRegisters];
    uint8_t _numAllocatableIntegerRegisters;
-   uint8_t _firstAllocatableIntegerArgumentRegister;
-   uint8_t _lastAllocatableIntegerVolatileRegister;
    uint8_t _numAllocatableFloatRegisters;
-   uint8_t _firstAllocatableFloatArgumentRegister;
-   uint8_t _lastAllocatableFloatVolatileRegister;
-   uint8_t _numAllocatableVectorRegisters;
-   uint8_t _firstAllocatableVectorArgumentRegister;
-   uint8_t _lastAllocatableVectortVolatileRegister;
-   uint8_t _numAllocatableCCRegisters;
-   uint32_t _allocationOrder[TR::RealRegister::NumRegisters];
-   uint32_t _preservedRegisterMapForGC;
    TR::RealRegister::RegNum _methodMetaDataRegister;
-   TR::RealRegister::RegNum _normalStackPointerRegister;
-   TR::RealRegister::RegNum _alternateStackPointerRegister;
-   TR::RealRegister::RegNum _TOCBaseRegister;
    TR::RealRegister::RegNum _computedCallTargetRegister;  // for icallVMprJavaSendPatchupVirtual
    TR::RealRegister::RegNum _vtableIndexArgumentRegister; // for icallVMprJavaSendPatchupVirtual
    TR::RealRegister::RegNum _j9methodArgumentRegister;    // for icallVMprJavaSendStatic
@@ -124,8 +108,6 @@ struct PPCLinkageProperties
    uint32_t getNumIntArgRegs() const {return _numIntegerArgumentRegisters;}
 
    uint32_t getNumFloatArgRegs() const {return _numFloatArgumentRegisters;}
-
-   uint32_t getNumVectorArgRegs() const {return _numVectorArgumentRegisters;}
 
    uint32_t getProperties() const {return _properties;}
 
@@ -139,8 +121,6 @@ struct PPCLinkageProperties
 
    uint32_t getFloatsInRegisters() const {return (_properties & FloatsInRegisters);}
 
-   uint32_t getSmallIntParmsAlignedRight() const { return (_properties & SmallIntParmsAlignedRight); }
-
    uint32_t getRegisterFlags(TR::RealRegister::RegNum regNum) const
       {
       return _registerFlags[regNum];
@@ -149,11 +129,6 @@ struct PPCLinkageProperties
    uint32_t getPreserved(TR::RealRegister::RegNum regNum) const
       {
       return (_registerFlags[regNum] & Preserved);
-      }
-
-   uint32_t getReserved(TR::RealRegister::RegNum regNum) const
-      {
-      return (_registerFlags[regNum] & PPC_Reserved);
       }
 
    uint32_t getIntegerReturn(TR::RealRegister::RegNum regNum) const
@@ -198,12 +173,6 @@ struct PPCLinkageProperties
       return _argumentRegisters[_firstFloatArgumentRegister+index];
       }
 
-   // get the indexth vector argument register
-   TR::RealRegister::RegNum getVectorArgumentRegister(uint32_t index) const
-      {
-      return _argumentRegisters[_firstVectorArgumentRegister+index];
-      }
-
    // get the indexth integer return register
    TR::RealRegister::RegNum getIntegerReturnRegister(uint32_t index) const
       {
@@ -214,12 +183,6 @@ struct PPCLinkageProperties
    TR::RealRegister::RegNum getFloatReturnRegister(uint32_t index) const
       {
       return _returnRegisters[_firstFloatReturnRegister+index];
-      }
-
-   // get the indexth vector return register
-   TR::RealRegister::RegNum getVectorReturnRegister(uint32_t index) const
-      {
-      return _returnRegisters[_firstVectorReturnRegister+index];
       }
 
    TR::RealRegister::RegNum getArgument(uint32_t index) const
@@ -234,7 +197,7 @@ struct PPCLinkageProperties
 
    TR::RealRegister::RegNum getIntegerReturnRegister() const
       {
-      return _returnRegisters[0];
+      return _returnRegisters[_firstIntegerReturnRegister];
       }
 
    // for 32-bit use only
@@ -252,7 +215,7 @@ struct PPCLinkageProperties
    // for 64-bit use only
    TR::RealRegister::RegNum getLongReturnRegister() const
       {
-      return _returnRegisters[0];
+      return _returnRegisters[_firstIntegerReturnRegister];
       }
 
    TR::RealRegister::RegNum getFloatReturnRegister() const
@@ -265,24 +228,9 @@ struct PPCLinkageProperties
       return _returnRegisters[_firstFloatReturnRegister];
       }
 
-   TR::RealRegister::RegNum getVectorReturnRegister() const
-      {
-      return _returnRegisters[_firstVectorReturnRegister];
-      }
-
    int32_t getNumAllocatableIntegerRegisters() const
       {
       return _numAllocatableIntegerRegisters;
-      }
-
-   int32_t getFirstAllocatableIntegerArgumentRegister() const
-      {
-      return _firstAllocatableIntegerArgumentRegister;
-      }
-
-   int32_t getLastAllocatableIntegerVolatileRegister() const
-      {
-      return _lastAllocatableIntegerVolatileRegister;
       }
 
    int32_t getNumAllocatableFloatRegisters() const
@@ -351,9 +299,65 @@ struct PPCLinkageProperties
    int32_t getOffsetToFirstLocal() const {return _offsetToFirstLocal;}
 
    uint32_t getNumberOfDependencyGPRegisters() const {return _numberOfDependencyGPRegisters;}
+
+   // POWER specific properties follows
+   uint8_t _numVectorArgumentRegisters;
+   uint8_t _firstVectorArgumentRegister;
+   uint8_t _firstVectorReturnRegister;
+   uint8_t _firstAllocatableIntegerArgumentRegister;
+   uint8_t _lastAllocatableIntegerVolatileRegister;
+   uint8_t _firstAllocatableFloatArgumentRegister;
+   uint8_t _lastAllocatableFloatVolatileRegister;
+   uint8_t _numAllocatableVectorRegisters;
+   uint8_t _firstAllocatableVectorArgumentRegister;
+   uint8_t _lastAllocatableVectortVolatileRegister;
+   uint8_t _numAllocatableCCRegisters;
+   uint32_t _allocationOrder[TR::RealRegister::NumRegisters];
+   uint32_t _preservedRegisterMapForGC;
+
+   TR::RealRegister::RegNum _normalStackPointerRegister;
+   TR::RealRegister::RegNum _alternateStackPointerRegister;
+   TR::RealRegister::RegNum _TOCBaseRegister;
+
+   uint32_t getNumVectorArgRegs() const {return _numVectorArgumentRegisters;}
+
+   uint32_t getSmallIntParmsAlignedRight() const { return (_properties & SmallIntParmsAlignedRight); }
+
+   uint32_t getReserved(TR::RealRegister::RegNum regNum) const
+      {
+      return (_registerFlags[regNum] & PPC_Reserved);
+      }
+
+   // get the indexth vector argument register
+   TR::RealRegister::RegNum getVectorArgumentRegister(uint32_t index) const
+      {
+      return _argumentRegisters[_firstVectorArgumentRegister+index];
+      }
+
+   // get the indexth vector return register
+   TR::RealRegister::RegNum getVectorReturnRegister(uint32_t index) const
+      {
+      return _returnRegisters[_firstVectorReturnRegister+index];
+      }
+
+   TR::RealRegister::RegNum getVectorReturnRegister() const
+      {
+      return _returnRegisters[_firstVectorReturnRegister];
+      }
+
+   int32_t getFirstAllocatableIntegerArgumentRegister() const
+      {
+      return _firstAllocatableIntegerArgumentRegister;
+      }
+
+   int32_t getLastAllocatableIntegerVolatileRegister() const
+      {
+      return _lastAllocatableIntegerVolatileRegister;
+      }
+
    };
 
-}
+} // namespace TR
 
 namespace OMR
 {
