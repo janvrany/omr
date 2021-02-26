@@ -99,6 +99,8 @@ struct PPCLinkageProperties
    uint8_t _numAllocatableIntegerRegisters;
    uint8_t _numAllocatableFloatRegisters;
    TR::RealRegister::RegNum _methodMetaDataRegister;
+   TR::RealRegister::RegNum _stackPointerRegister;
+   TR::RealRegister::RegNum _framePointerRegister;
    TR::RealRegister::RegNum _computedCallTargetRegister;  // for icallVMprJavaSendPatchupVirtual
    TR::RealRegister::RegNum _vtableIndexArgumentRegister; // for icallVMprJavaSendPatchupVirtual
    TR::RealRegister::RegNum _j9methodArgumentRegister;    // for icallVMprJavaSendStatic
@@ -266,14 +268,14 @@ struct PPCLinkageProperties
       return _methodMetaDataRegister;
       }
 
-   TR::RealRegister::RegNum getNormalStackPointerRegister() const
+   TR::RealRegister::RegNum getStackPointerRegister() const
       {
-      return _normalStackPointerRegister;
+      return _stackPointerRegister;
       }
 
-   TR::RealRegister::RegNum getTOCBaseRegister() const
+   TR::RealRegister::RegNum getFramePointerRegister() const
       {
-      return _TOCBaseRegister;
+      return _framePointerRegister;
       }
 
    TR::RealRegister::RegNum getComputedCallTargetRegister() const
@@ -310,7 +312,6 @@ struct PPCLinkageProperties
    uint32_t _allocationOrder[TR::RealRegister::NumRegisters];
    uint32_t _preservedRegisterMapForGC;
 
-   TR::RealRegister::RegNum _normalStackPointerRegister;
    TR::RealRegister::RegNum _TOCBaseRegister;
 
    uint32_t getNumVectorArgRegs() const {return _numVectorArgumentRegisters;}
@@ -348,6 +349,12 @@ struct PPCLinkageProperties
       {
       return _lastAllocatableIntegerVolatileRegister;
       }
+
+   TR::RealRegister::RegNum getTOCBaseRegister() const
+      {
+      return _TOCBaseRegister;
+      }
+
 
    };
 

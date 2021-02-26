@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2020 IBM Corp. and others
+ * Copyright (c) 2000, 2021 IBM Corp. and others
  *
  * This program and the accompanying materials are made available under
  * the terms of the Eclipse Public License 2.0 which accompanies this
@@ -324,7 +324,8 @@ TR::PPCSystemLinkage::PPCSystemLinkage(TR::CodeGenerator *cg)
 
    _properties._preservedRegisterMapForGC     = 0x60007fff;
    _properties._methodMetaDataRegister        = TR::RealRegister::NoReg;
-   _properties._normalStackPointerRegister    = TR::RealRegister::gr1;
+   _properties._stackPointerRegister          = TR::RealRegister::gr1;
+   _properties._framePointerRegister          = TR::RealRegister::NoReg;
    _properties._TOCBaseRegister               = TR::RealRegister::gr2;
    _properties._vtableIndexArgumentRegister   = TR::RealRegister::NoReg;
    _properties._j9methodArgumentRegister      = TR::RealRegister::NoReg;
@@ -626,7 +627,7 @@ TR::PPCSystemLinkage::createPrologue(
    const TR::PPCLinkageProperties &properties = getProperties();
    TR::ResolvedMethodSymbol        *bodySymbol = comp()->getJittedMethodSymbol();
    // Stack Pointer Register may currently be set to "alternate"
-   cg()->setStackPointerRegister(machine->getRealRegister(properties.getNormalStackPointerRegister()));
+   cg()->setStackPointerRegister(machine->getRealRegister(properties.getStackPointerRegister()));
    TR::RealRegister        *sp = cg()->getStackPointerRegister();
    TR::RealRegister        *metaBase = cg()->getMethodMetaDataRegister();
    TR::RealRegister        *gr2 = machine->getRealRegister(TR::RealRegister::gr2);
