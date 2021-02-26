@@ -325,7 +325,6 @@ TR::PPCSystemLinkage::PPCSystemLinkage(TR::CodeGenerator *cg)
    _properties._preservedRegisterMapForGC     = 0x60007fff;
    _properties._methodMetaDataRegister        = TR::RealRegister::NoReg;
    _properties._normalStackPointerRegister    = TR::RealRegister::gr1;
-   _properties._alternateStackPointerRegister = TR::RealRegister::gr31;
    _properties._TOCBaseRegister               = TR::RealRegister::gr2;
    _properties._vtableIndexArgumentRegister   = TR::RealRegister::NoReg;
    _properties._j9methodArgumentRegister      = TR::RealRegister::NoReg;

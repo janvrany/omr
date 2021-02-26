@@ -271,11 +271,6 @@ struct PPCLinkageProperties
       return _normalStackPointerRegister;
       }
 
-   TR::RealRegister::RegNum getAlternateStackPointerRegister() const
-      {
-      return _alternateStackPointerRegister;
-      }
-
    TR::RealRegister::RegNum getTOCBaseRegister() const
       {
       return _TOCBaseRegister;
@@ -316,7 +311,6 @@ struct PPCLinkageProperties
    uint32_t _preservedRegisterMapForGC;
 
    TR::RealRegister::RegNum _normalStackPointerRegister;
-   TR::RealRegister::RegNum _alternateStackPointerRegister;
    TR::RealRegister::RegNum _TOCBaseRegister;
 
    uint32_t getNumVectorArgRegs() const {return _numVectorArgumentRegisters;}
