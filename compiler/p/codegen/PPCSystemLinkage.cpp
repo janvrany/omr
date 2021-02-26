@@ -1555,7 +1555,7 @@ void TR::PPCSystemLinkage::buildVirtualDispatch(TR::Node                        
    //Library TOC Register
    TR::Register        *grTOCReg=TR::TreeEvaluator::retrieveTOCRegister(callNode, cg(), dependencies);
    //Native Stack Pointer (C Stack)
-   TR::RealRegister *grSysStackReg=cg()->machine()->getRealRegister(properties.getNormalStackPointerRegister());
+   TR::RealRegister *grSysStackReg=cg()->getStackPointerRegister();
 
    TR_ASSERT((gr0 != NULL),            "TR::PPCSystemLinkage::buildVirtualDispatch no dependence set on scratch register gr0.");
    TR_ASSERT((grTOCReg != NULL),       "TR::PPCSystemLinkage::buildVirtualDispatch no dependence set on Library TOC register gr2.");
