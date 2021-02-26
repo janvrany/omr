@@ -80,28 +80,23 @@ class RVMemoryArgument
 #define Reserved                    0x40
 
 #define FOR_EACH_REGISTER(machine, block)                                        \
-   for (int regNum = TR::RealRegister::x0; regNum <= TR::RealRegister::x31; regNum++) \
+   for (auto regNum = TR::RealRegister::FirstRealRegister;                       \
+             regNum <= TR::RealRegister::LastRealRegister;                       \
+             regNum++)                                                           \
       {                                                                          \
-      TR::RealRegister *reg                                                      \
-                   = machine->getRealRegister((TR::RealRegister::RegNum)regNum); \
+      TR::RealRegister *reg = machine->getRealRegister(regNum);                  \
       { block; }                                                                 \
       }                                                                          \
-   for (int regNum = TR::RealRegister::f0; regNum <= TR::RealRegister::f31; regNum++) \
-      {                                                                          \
-      TR::RealRegister *reg                                                      \
-                   = machine->getRealRegister((TR::RealRegister::RegNum)regNum); \
-      { block; }                                                                 \
-      }
 
 #define FOR_EACH_RESERVED_REGISTER(machine, props, block)                        \
    FOR_EACH_REGISTER(machine,                                                    \
-   if (props._registerFlags[(TR::RealRegister::RegNum)regNum] & Reserved)     \
+   if (props._registerFlags[regNum] & Reserved)                                  \
       { block; }                                                                 \
    )
 
 #define FOR_EACH_CALLEE_SAVED_REGISTER(machine, props, block)                    \
    FOR_EACH_REGISTER(machine,                                                    \
-   if (props._registerFlags[(TR::RealRegister::RegNum)regNum] == Preserved)      \
+   if (props._registerFlags[regNum] == Preserved)                                \
       { block; }                                                                 \
    )
 

@@ -57,25 +57,4 @@ inline TR::RealRegister *toRealRegister(TR::Register *r)
    return static_cast<TR::RealRegister *>(r);
    }
 
-
-// TODO: Move it to common code (OMRRealRegister.hpp)
-inline TR::RealRegister::RegNum& operator++(TR::RealRegister::RegNum& rn)
-   {
-   // TODO: Is this assert useful? Moreover, for POWER it would have to take CCRs
-   // and vector into an account...
-   TR_ASSERT_FATAL(
-         ((TR::RealRegister::FirstGPR <= rn) && (rn <= TR::RealRegister::LastGPR))
-               || ((TR::RealRegister::FirstFPR <= rn) && (rn <= TR::RealRegister::LastFPR)),
-         "Invalid value");
-   rn = static_cast<TR::RealRegister::RegNum>(static_cast<int>(rn + 1));
-   return rn;
-   }
-
-// TODO: Move it to common code (OMRRealRegister.hpp)
-inline TR::RealRegister::RegNum operator++(TR::RealRegister::RegNum& in, int)
-   {
-   TR::RealRegister::RegNum out = in;
-   ++in;
-   return out;
-   }
 #endif
