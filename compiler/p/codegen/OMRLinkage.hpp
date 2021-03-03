@@ -42,6 +42,8 @@ namespace OMR { typedef OMR::Power::Linkage LinkageConnector; }
 #include "env/TRMemory.hpp"
 #include "infra/Annotations.hpp"
 
+#include <string.h> // TODO: remove once linkage props are made static
+
 namespace TR { class AutomaticSymbol; }
 namespace TR { class CodeGenerator; }
 namespace TR { class Compilation; }
@@ -83,6 +85,8 @@ class PPCMemoryArgument
 #define FloatArgument               0x10
 #define CallerAllocatesBackingStore 0x20
 #define Reserved                    0x40
+#define VectorReturn                0x80
+#define VectorArgument             0x100
 
 struct PPCLinkageProperties
    {
@@ -287,6 +291,15 @@ struct PPCLinkageProperties
    int32_t getOffsetToFirstLocal() const {return _offsetToFirstLocal;}
 
    uint32_t getNumberOfDependencyGPRegisters() const {return _numberOfDependencyGPRegisters;}
+
+   /**
+    * @brief Initialize derived properties from register flags. This *must* be called
+    * after _registerFlags are populated.
+    */
+   void initialize();
+
+   // TODO: remove once linkage props are made static
+   PPCLinkageProperties() { memset(this, 0, sizeof(this)); }
 
    // POWER specific properties follows
    uint8_t _numVectorArgumentRegisters;

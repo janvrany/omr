@@ -56,6 +56,124 @@ class TR_OpaqueClassBlock;
 namespace TR { class AutomaticSymbol; }
 namespace TR { class Register; }
 
+void TR::PPCLinkageProperties::initialize()
+   {
+   /*
+    * Note: following code depends on zero initialization of all members!
+    */
+
+   _numAllocatableIntegerRegisters = TR::RealRegister::LastGPR - TR::RealRegister::FirstGPR + 1;
+   _numAllocatableFloatRegisters = TR::RealRegister::LastGPR - TR::RealRegister::FirstGPR + 1;
+
+   int numIntegerReturnRegisters = 0;
+   int numFloatReturnRegisters = 0;
+
+   for (auto regNum = TR::RealRegister::FirstGPR; regNum <= TR::RealRegister::LastGPR; regNum++)
+      {
+      if (_registerFlags[regNum] & Reserved)
+         {
+         _numAllocatableIntegerRegisters--;
+         }
+      if (_registerFlags[regNum] & IntegerArgument)
+         {
+         _argumentRegisters[_firstIntegerArgumentRegister + _numIntegerArgumentRegisters++] = regNum;
+         }
+      if (_registerFlags[regNum] & IntegerReturn)
+         {
+         _returnRegisters[_firstIntegerReturnRegister + numIntegerReturnRegisters++] = regNum;
+         }
+      }
+
+   _firstFloatArgumentRegister = _firstIntegerArgumentRegister + _numIntegerArgumentRegisters;
+   _firstFloatReturnRegister = _firstIntegerArgumentRegister + numIntegerReturnRegisters;
+
+   for (auto regNum = TR::RealRegister::FirstFPR; regNum <= TR::RealRegister::LastFPR; regNum++)
+         {
+         if (_registerFlags[regNum] & Reserved)
+            {
+            _numAllocatableFloatRegisters--;
+            }
+         if (_registerFlags[regNum] & FloatArgument)
+            {
+            _argumentRegisters[_firstFloatArgumentRegister + _numFloatArgumentRegisters++] = regNum;
+            }
+         if (_registerFlags[regNum] & FloatReturn)
+            {
+            _returnRegisters[_firstFloatReturnRegister + numFloatReturnRegisters++] = regNum;
+            }
+         }
+
+    // ===========================================================================
+    // POWER Specific follows
+    // ===========================================================================
+    _numAllocatableVectorRegisters = TR::RealRegister::LastVSR - TR::RealRegister::FirstVSR + 1;
+    _firstVectorArgumentRegister = _firstFloatArgumentRegister + _numFloatArgumentRegisters;
+    _firstVectorReturnRegister = _firstFloatReturnRegister + numFloatReturnRegisters;
+
+    int numVectorReturnRegisters = 0;
+
+    for (auto regNum = TR::RealRegister::FirstVSR; regNum <= TR::RealRegister::LastVSR; regNum++)
+         {
+         if (_registerFlags[regNum] & Reserved)
+            {
+            _numAllocatableVectorRegisters--;
+            }
+         if (_registerFlags[regNum] & VectorArgument)
+            {
+            _argumentRegisters[_firstVectorArgumentRegister + _numVectorArgumentRegisters++] = regNum;
+            }
+         if (_registerFlags[regNum] & VectorReturn)
+            {
+            _returnRegisters[_firstVectorReturnRegister + numVectorReturnRegisters++] = regNum;
+            }
+         }
+    
+    for (auto regNum = TR::RealRegister::FirstGPR; regNum <= TR::RealRegister::LastGPR; regNum++)
+       {
+       if (      (_registerFlags[regNum] & IntegerArgument)
+             //&& !(_registerFlags[regNum] & IntegerReturn)
+             &&  (_firstAllocatableIntegerArgumentRegister == TR::RealRegister::NoReg) )
+          {
+          _firstAllocatableIntegerArgumentRegister = regNum;
+          }
+       if (!_registerFlags[regNum] & (Preserved|Reserved))
+          {
+          _lastAllocatableIntegerVolatileRegister = regNum;
+          }
+       }
+
+    for (auto regNum = TR::RealRegister::FirstFPR; regNum <= TR::RealRegister::LastFPR; regNum++)
+           {
+           if (      (_registerFlags[regNum] & FloatArgument)
+                 //&& !(_registerFlags[regNum] & FloatReturn)
+                 &&  (_firstAllocatableFloatArgumentRegister == TR::RealRegister::NoReg) )
+              {
+              _firstAllocatableFloatArgumentRegister = regNum;
+              }
+           if (!_registerFlags[regNum] & (Preserved|Reserved))
+              {
+              _lastAllocatableFloatVolatileRegister = regNum;
+              }
+           }
+
+    for (auto regNum = TR::RealRegister::FirstVSR; regNum <= TR::RealRegister::LastVSR; regNum++)
+           {
+           if (      (_registerFlags[regNum] & VectorArgument)
+                 //&& !(_registerFlags[regNum] & VectorReturn)
+                 &&  (_firstAllocatableVectorArgumentRegister == TR::RealRegister::NoReg) )
+              {
+              _firstAllocatableVectorArgumentRegister = regNum;
+              }
+           if (!_registerFlags[regNum] & (Preserved|Reserved))
+              {
+              _lastAllocatableVectortVolatileRegister = regNum;
+              }
+           }
+
+    _numAllocatableCCRegisters = 8;
+
+   }
+
 void OMR::Power::Linkage::mapStack(TR::ResolvedMethodSymbol *method)
    {
    }
