@@ -301,13 +301,17 @@ struct PPCLinkageProperties
    uint8_t _numVectorArgumentRegisters;
    uint8_t _firstVectorArgumentRegister;
    uint8_t _firstVectorReturnRegister;
-   uint8_t _firstAllocatableIntegerArgumentRegister;
-   uint8_t _lastAllocatableIntegerVolatileRegister;
-   uint8_t _firstAllocatableFloatArgumentRegister;
-   uint8_t _lastAllocatableFloatVolatileRegister;
    uint8_t _numAllocatableVectorRegisters;
-   uint8_t _firstAllocatableVectorArgumentRegister;
-   uint8_t _lastAllocatableVectortVolatileRegister;
+
+   TR::RealRegister::RegNum _firstAllocatableIntegerArgumentRegister;
+   TR::RealRegister::RegNum _lastAllocatableIntegerVolatileRegister;
+
+   TR::RealRegister::RegNum _firstAllocatableFloatArgumentRegister;
+   TR::RealRegister::RegNum _lastAllocatableFloatVolatileRegister;
+
+   TR::RealRegister::RegNum _firstAllocatableVectorArgumentRegister;
+   TR::RealRegister::RegNum _lastAllocatableVectortVolatileRegister;
+
    uint8_t _numAllocatableCCRegisters;
    uint32_t _allocationOrder[TR::RealRegister::NumRegisters];
    uint32_t _preservedRegisterMapForGC;
