@@ -240,15 +240,6 @@ struct PPCLinkageProperties
       return _numAllocatableFloatRegisters;
       }
 
-   int32_t getFirstAllocatableFloatArgumentRegister() const
-      {
-      return _firstAllocatableFloatArgumentRegister;
-      }
-
-   int32_t getLastAllocatableFloatVolatileRegister() const
-      {
-      return _lastAllocatableFloatVolatileRegister;
-      }
    int32_t getNumAllocatableVectorRegisters() const
       {
       return _numAllocatableVectorRegisters;
@@ -303,12 +294,18 @@ struct PPCLinkageProperties
    uint8_t _firstVectorReturnRegister;
    uint8_t _numAllocatableVectorRegisters;
 
+   // TODO: document the exact meaning of this member. How this is different
+   // from _argumentRegisters[_firstIntegerArgumentRegister]?
    TR::RealRegister::RegNum _firstAllocatableIntegerArgumentRegister;
    TR::RealRegister::RegNum _lastAllocatableIntegerVolatileRegister;
 
+   // TODO: document the exact meaning of this member. How this is different
+   // from _argumentRegisters[_firstFloatArgumentRegister]?
    TR::RealRegister::RegNum _firstAllocatableFloatArgumentRegister;
    TR::RealRegister::RegNum _lastAllocatableFloatVolatileRegister;
 
+   // TODO: document the exact meaning of this member. How this is different
+   // from _argumentRegisters[_firstVectorArgumentRegister]?
    TR::RealRegister::RegNum _firstAllocatableVectorArgumentRegister;
    TR::RealRegister::RegNum _lastAllocatableVectortVolatileRegister;
 
@@ -344,6 +341,7 @@ struct PPCLinkageProperties
       return _returnRegisters[_firstVectorReturnRegister];
       }
 
+   // TODO: see comment on _firstAllocatableIntegerArgumentRegister
    int32_t getFirstAllocatableIntegerArgumentRegister() const
       {
       return _firstAllocatableIntegerArgumentRegister;
@@ -352,6 +350,17 @@ struct PPCLinkageProperties
    int32_t getLastAllocatableIntegerVolatileRegister() const
       {
       return _lastAllocatableIntegerVolatileRegister;
+      }
+
+   // TODO: see comment on _firstAllocatableFloatArgumentRegister
+   int32_t getFirstAllocatableFloatArgumentRegister() const
+      {
+      return _firstAllocatableFloatArgumentRegister;
+      }
+
+   int32_t getLastAllocatableFloatVolatileRegister() const
+      {
+      return _lastAllocatableFloatVolatileRegister;
       }
 
    TR::RealRegister::RegNum getTOCBaseRegister() const
