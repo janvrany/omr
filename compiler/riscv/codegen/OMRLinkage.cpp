@@ -29,54 +29,6 @@
 #include "il/Node.hpp"
 #include "il/Node_inlines.hpp"
 
-void TR::RVLinkageProperties::initialize()
-   {
-   /*
-    * Note: following code depends on zero initialization of all members!
-    */
-
-   _numAllocatableIntegerRegisters = TR::RealRegister::LastGPR - TR::RealRegister::FirstGPR + 1;
-   _numAllocatableFloatRegisters = TR::RealRegister::LastGPR - TR::RealRegister::FirstGPR + 1;
-
-   int numIntegerReturnRegisters = 0;
-   int numFloatReturnRegisters = 0;
-
-   for (auto regNum = TR::RealRegister::FirstGPR; regNum <= TR::RealRegister::LastGPR; regNum++)
-      {
-      if (_registerFlags[regNum] & Reserved)
-         {
-         _numAllocatableIntegerRegisters--;
-         }
-      if (_registerFlags[regNum] & IntegerArgument)
-         {
-         _argumentRegisters[_firstIntegerArgumentRegister + _numIntegerArgumentRegisters++] = regNum;
-         }
-      if (_registerFlags[regNum] & IntegerReturn)
-         {
-         _returnRegisters[_firstIntegerReturnRegister + numIntegerReturnRegisters++] = regNum;
-         }
-      }
-
-   _firstFloatArgumentRegister = _firstIntegerArgumentRegister + _numIntegerArgumentRegisters;
-   _firstFloatReturnRegister = _firstIntegerArgumentRegister + numIntegerReturnRegisters;
-
-   for (auto regNum = TR::RealRegister::FirstFPR; regNum <= TR::RealRegister::LastFPR; regNum++)
-         {
-         if (_registerFlags[regNum] & Reserved)
-            {
-            _numAllocatableFloatRegisters--;
-            }
-         if (_registerFlags[regNum] & FloatArgument)
-            {
-            _argumentRegisters[_firstFloatArgumentRegister + _numFloatArgumentRegisters++] = regNum;
-            }
-         if (_registerFlags[regNum] & FloatReturn)
-            {
-            _returnRegisters[_firstFloatReturnRegister + numFloatReturnRegisters++] = regNum;
-            }
-         }
-   }
-
 void OMR::RV::Linkage::mapStack(TR::ResolvedMethodSymbol *method)
    {
    /* do nothing */
