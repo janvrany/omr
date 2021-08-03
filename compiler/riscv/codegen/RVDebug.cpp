@@ -33,6 +33,7 @@
 #include "codegen/RegisterConstants.hpp"
 #include "codegen/RegisterDependency.hpp"
 #include "codegen/RegisterDependencyStruct.hpp"
+#include "codegen/Snippet.hpp"
 #include "env/IO.hpp"
 #include "il/Block.hpp"
 #include "runtime/CodeCacheManager.hpp"
@@ -432,4 +433,62 @@ TR_Debug::isBranchToTrampoline(TR::SymbolReference *symRef, uint8_t *cursor, int
 
    distance = (int32_t)(target - (intptr_t)cursor);
    return requiresTrampoline;
+   }
+
+const char *
+TR_Debug::getRVSnippetName(TR::Snippet * snippet)
+   {
+   switch (snippet->getKind())
+      {
+      case TR::Snippet::IsCall:
+         return "Call Snippet";
+         break;
+      case TR::Snippet::IsUnresolvedCall:
+         return "Unresolved Call Snippet";
+         break;
+      case TR::Snippet::IsVirtualUnresolved:
+         return "Unresolved Virtual Call Snippet";
+         break;
+      case TR::Snippet::IsInterfaceCall:
+         return "Interface Call Snippet";
+         break;
+      case TR::Snippet::IsStackCheckFailure:
+         return "Stack Check Failure Snippet";
+         break;
+      case TR::Snippet::IsUnresolvedData:
+         return "Unresolved Data Snippet";
+         break;
+      case TR::Snippet::IsRecompilation:
+         return "Recompilation Snippet";
+         break;
+      case TR::Snippet::IsHelperCall:
+         return "Helper Call Snippet";
+         break;
+      case TR::Snippet::IsMonitorEnter:
+         return "MonitorEnter Inc Counter";
+         break;
+      case TR::Snippet::IsMonitorExit:
+         return "MonitorExit Dec Counter";
+         break;
+      default:
+         return "<unknown snippet>";
+      }
+   }
+
+
+void
+TR_Debug::printRVSnippet(TR::FILE *pOutFile, TR::Snippet * snippet)
+   {
+   if (pOutFile == NULL)
+      return;
+   switch (snippet->getKind())
+      {
+      default:
+         {
+         printSnippetLabel(pOutFile,
+                           snippet->getSnippetLabel(),
+                           snippet->getSnippetLabel()->getCodeLocation(),
+                           getRVSnippetName(snippet), "");
+         }
+      }
    }

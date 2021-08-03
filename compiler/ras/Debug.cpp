@@ -2919,6 +2919,13 @@ TR_Debug::print(TR::FILE *pOutFile, TR::Snippet * snippet)
       return;
       }
 #endif
+#if defined(TR_TARGET_RISCV)
+   if (_comp->target().cpu.isRISCV())
+      {
+      printRVSnippet(pOutFile, snippet);
+      return;
+      }
+#endif
 
    }
 

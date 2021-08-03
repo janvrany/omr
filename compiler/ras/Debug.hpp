@@ -1230,7 +1230,10 @@ public:
    void printMemoryReferenceComment(TR::FILE *, TR::MemoryReference *);
 
    const char *getRVRegisterName(uint32_t, bool = true);
-#endif
+   const char *getRVSnippetName(TR::Snippet * snippet);
+
+   void printRVSnippet(TR::FILE *, TR::Snippet *);
+#endif // TR_TARGET_RISCV
 
    friend class TR_CFGChecker;
 
