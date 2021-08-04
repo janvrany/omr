@@ -2106,6 +2106,10 @@ OMR::Compilation::notYetRunMeansCold()
 void
 OMR::Compilation::setReturnInfo(TR_ReturnInfo i)
    {
+#ifndef TR_TARGET_64BIT
+   TR_ASSERT_FATAL(i != TR_ObjectReturn, "TR_ObjectReturn should not be used for 32bit architecture");
+#endif
+
    // For object constructors, set the fixed return type if owning class
    // contains final fields.
    //
