@@ -29,6 +29,34 @@
 #include "codegen/GenerateInstructions.hpp"
 #include "il/Node.hpp"
 #include "il/Node_inlines.hpp"
+#include "il/StaticSymbol.hpp"
+
+
+static void loadRelocatableConstant(TR::Node *node,
+                                    TR::SymbolReference *ref,
+                                    TR::Register *reg,
+                                    TR::MemoryReference *mr,
+                                    TR::CodeGenerator *cg)
+   {
+   TR::Compilation *comp = cg->comp();
+   TR::Symbol *symbol = ref->getSymbol();
+
+   uintptr_t addr = symbol->isStatic() ? (uintptr_t)symbol->getStaticSymbol()->getStaticAddress() : (uintptr_t)symbol->getMethodSymbol()->getMethodAddress();
+
+   if (symbol->isStartPC())
+      {
+      TR_UNIMPLEMENTED();
+      }
+   else if (ref->isUnresolved() || comp->compileRelocatableCode())
+      {
+      TR_UNIMPLEMENTED();
+      }
+   else
+      {
+      loadConstant64(cg, node, addr, reg);
+      }
+   }
+
 
 
 OMR::RV::MemoryReference::MemoryReference(
@@ -107,7 +135,16 @@ OMR::RV::MemoryReference::MemoryReference(
       {
       if (symbol->isStatic())
          {
-         TR_UNIMPLEMENTED();
+         if (ref->isUnresolved())
+            {
+            TR_UNIMPLEMENTED();
+            }
+         else
+            {
+            _baseRegister = cg->allocateRegister();
+            self()->setBaseModifiable();
+            loadRelocatableConstant(rootLoadOrStore, ref, _baseRegister, self(), cg);
+            }
          }
       else
          {
