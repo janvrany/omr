@@ -86,6 +86,14 @@ void TR::RVLinkageProperties::initialize()
    _numberOfDependencyRegisters =   (TR::RealRegister::LastGPR - TR::RealRegister::FirstGPR + 1)
                                   + (TR::RealRegister::LastFPR - TR::RealRegister::FirstFPR + 1);
 
+   // Compute preserved register map for GC
+   _preservedRegisterMapForGC = 0;
+   for (auto i = TR::RealRegister::FirstGPR; i <= TR::RealRegister::LastGPR; i++) {
+      if (_registerFlags[i] == Preserved) {
+         _preservedRegisterMapForGC |= (1 << (i - TR::RealRegister::FirstGPR));
+      }
+   }
+
    }
 
 void OMR::RV::Linkage::mapStack(TR::ResolvedMethodSymbol *method)

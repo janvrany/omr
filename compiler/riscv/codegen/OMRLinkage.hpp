@@ -126,6 +126,7 @@ struct RVLinkageProperties
    TR::RealRegister::RegNum _returnRegisters[TR::RealRegister::NumRegisters];
    uint8_t _numAllocatableIntegerRegisters;
    uint8_t _numAllocatableFloatRegisters;
+   uint32_t _preservedRegisterMapForGC;
    TR::RealRegister::RegNum _methodMetaDataRegister;
    TR::RealRegister::RegNum _stackPointerRegister;
    TR::RealRegister::RegNum _framePointerRegister;
@@ -254,6 +255,11 @@ struct RVLinkageProperties
       {
       return _numAllocatableFloatRegisters;
       }
+
+   uint32_t getPreservedRegisterMapForGC() const
+         {
+         return _preservedRegisterMapForGC;
+         }
 
    TR::RealRegister::RegNum getMethodMetaDataRegister() const
       {
