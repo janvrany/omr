@@ -133,6 +133,7 @@ SETVAL(TR_lastGPUHelper,TR_transactionExit+21)
 
 SETVAL(TR_FSRH, TR_lastGPUHelper+1)
 
+#if defined(TR_TARGET_X86)
 SETVAL(TR_X86resolveIPicClass,TR_FSRH+0)
 SETVAL(TR_X86populateIPicSlotClass,TR_FSRH+1)
 SETVAL(TR_X86populateIPicSlotCall,TR_FSRH+2)
@@ -252,7 +253,9 @@ SETVAL(TR_AMD64encodeUTF16Little,TR_LXRH+36)
 SETVAL(TR_AMD64doAESENCEncrypt,TR_LXRH+37)
 SETVAL(TR_AMD64doAESENCDecrypt,TR_LXRH+38)
 SETVAL(TR_AMD64numRuntimeHelpers,TR_LXRH+39)
+#endif
 
+#if defined(TR_TARGET_POWER)
 SETVAL(TR_PPClongDivide,TR_FSRH)
 SETVAL(TR_PPCnativeStaticHelper,TR_FSRH+1)
 SETVAL(TR_PPCunsignedLongDivide,TR_FSRH+2)
@@ -352,7 +355,9 @@ SETVAL(TR_PPCcrc32_vpmsum, TR_FSRH+95)
 SETVAL(TR_PPCcrc32_no_vpmsum, TR_FSRH+96)
 SETVAL(TR_PPCcrc32_oneByte, TR_FSRH+97)
 SETVAL(TR_PPCnumRuntimeHelpers,TR_FSRH+98)
+#endif
 
+#if defined(TR_TARGET_ARM)
 SETVAL(TR_ARMdouble2Long,TR_FSRH)
 SETVAL(TR_ARMdoubleRemainder,TR_FSRH+1)
 SETVAL(TR_ARMdouble2Integer,TR_FSRH+2)
@@ -465,7 +470,9 @@ SETVAL(TR_ARMfloatRemainder,TR_FSRH+108)
 SETVAL(TR_ARMlong2Float,TR_FSRH+109)
 SETVAL(TR_ARMfloat2Long,TR_FSRH+110)
 SETVAL(TR_ARMnumRuntimeHelpers,TR_FSRH+111)
+#endif
 
+#if defined(TR_TARGET_ARM64)
 SETVAL(TR_ARM64interpreterUnresolvedStaticGlue,TR_FSRH)
 SETVAL(TR_ARM64interpreterUnresolvedSpecialGlue,TR_FSRH+1)
 SETVAL(TR_ARM64interpreterUnresolvedDirectVirtualGlue,TR_FSRH+2)
@@ -521,7 +528,9 @@ SETVAL(TR_ARM64interfaceSlotsUnavailable,TR_FSRH+51)
 SETVAL(TR_ARM64PatchGCRHelper,TR_FSRH+52)
 SETVAL(TR_ARM64fieldWatchHelper,TR_FSRH+53)
 SETVAL(TR_ARM64numRuntimeHelpers,TR_FSRH+54)
+#endif
 
+#if defined(TR_TARGET_S390)
 SETVAL(TR_S390longDivide,TR_FSRH)
 SETVAL(TR_S390interfaceCallHelper,TR_FSRH+1)
 SETVAL(TR_S390nativeStaticHelper,TR_FSRH+2)
@@ -624,5 +633,6 @@ SETVAL(TR_S390jitResolveConstantDynamicGlue, TR_FSRH+98)
 SETVAL(TR_S390jitResolvedFieldIsVolatile, TR_FSRH+99)
 SETVAL(TR_S390interpreterStaticSpecialCallGlue, TR_FSRH+100)
 SETVAL(TR_S390numRuntimeHelpers,TR_FSRH+101)
+#endif
 
 SETVAL(TR_RISCVnumRuntimeHelpers,TR_FSRH+1)
