@@ -3077,9 +3077,13 @@ OMR::RV::TreeEvaluator::directCallEvaluator(TR::Node *node, TR::CodeGenerator *c
    TR::SymbolReference *symRef = node->getSymbolReference();
    TR::MethodSymbol *callee = symRef->getSymbol()->castToMethodSymbol();
 
-   // FIXME: How comes here we get private linkage?
-   // TR::Linkage *linkage = cg->getLinkage(callee->getLinkageConvention());
+   // FIXME: For some reason, MethodSymbols are by default created with
+   // private linkage, but the private linkage only exists in OpenJ9!
+#ifdef J9_PROJECT_SPECIFIC
+   TR::Linkage *linkage = cg->getLinkage(callee->getLinkageConvention());
+#else
    TR::Linkage *linkage = cg->getLinkage(TR_System);
+#endif
 
    return linkage->buildDirectDispatch(node);
    }
@@ -3091,9 +3095,13 @@ OMR::RV::TreeEvaluator::indirectCallEvaluator(TR::Node *node, TR::CodeGenerator 
    TR::SymbolReference *symRef = node->getSymbolReference();
    TR::MethodSymbol *callee = symRef->getSymbol()->castToMethodSymbol();
 
-   // FIXME: How comes here we get private linkage?
-   // TR::Linkage *linkage = cg->getLinkage(callee->getLinkageConvention());
+   // FIXME: For some reason, MethodSymbols are by default created with
+   // private linkage, but the private linkage only exists in OpenJ9!
+#ifdef J9_PROJECT_SPECIFIC
+   TR::Linkage *linkage = cg->getLinkage(callee->getLinkageConvention());
+#else
    TR::Linkage *linkage = cg->getLinkage(TR_System);
+#endif
 
    return linkage->buildIndirectDispatch(node);
    }
