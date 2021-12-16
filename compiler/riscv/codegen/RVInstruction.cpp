@@ -26,6 +26,7 @@
 #include "codegen/CodeGenerator.hpp"              // for CodeGenerator, etc
 #include "codegen/InstOpCode.hpp"                 // for InstOpCode, etc
 #include "codegen/Instruction.hpp"                // for Instruction
+#include "codegen/InstructionDelegate.hpp"
 #include "codegen/Linkage.hpp"
 #include "codegen/Machine.hpp"                    // for Machine, etc
 #include "codegen/MemoryReference.hpp"            // for MemoryReference
@@ -511,6 +512,7 @@ uint8_t *TR::JtypeInstruction::generateBinaryEncoding() {
       else
          {
          cg()->addRelocation(new (cg()->trHeapMemory()) TR::LabelRelative32BitRelocation(cursor, getLabelSymbol()));
+         TR::InstructionDelegate::encodeBranchToLabel(cg(), this, cursor);
          }
       }
 
