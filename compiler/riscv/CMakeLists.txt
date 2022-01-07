@@ -19,6 +19,8 @@
 # SPDX-License-Identifier: EPL-2.0 OR Apache-2.0 OR GPL-2.0-only WITH Classpath-exception-2.0 OR GPL-2.0-only WITH OpenJDK-assembly-exception-1.0
 ###############################################################################
 
+list(APPEND ${COMPILER_NAME}_INCLUDES ${omr_SOURCE_DIR}/third_party/riscv-assembler/src)
+
 compiler_library(riscv
 # Target files
 	${CMAKE_CURRENT_LIST_DIR}/codegen/RVDebug.cpp
@@ -42,8 +44,11 @@ compiler_library(riscv
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRTreeEvaluator.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OpBinary.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/UnaryEvaluator.cpp
-	${CMAKE_CURRENT_LIST_DIR}/codegen/RVHelperCallSnippet.cpp
+	${CMAKE_CURRENT_LIST_DIR}/codegen/RVHelperCallSnippet.cpp	
 	${CMAKE_CURRENT_LIST_DIR}/env/OMRDebugEnv.cpp
 	${CMAKE_CURRENT_LIST_DIR}/env/OMRCPU.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime/CodeSync.cpp
+
+	${CMAKE_CURRENT_LIST_DIR}/codegen/RVDisassembler.cpp
+	${omr_SOURCE_DIR}/third_party/riscv-disassembler/src/riscv-disas.c
 )

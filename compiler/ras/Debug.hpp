@@ -1233,6 +1233,8 @@ public:
    const char *getRVSnippetName(TR::Snippet * snippet);
 
    void printRVSnippet(TR::FILE *, TR::Snippet *);
+   void printRVSnippetCode(TR::FILE *pOutFile, uint8_t* code, uint32_t length);
+   
 #endif // TR_TARGET_RISCV
 
    friend class TR_CFGChecker;

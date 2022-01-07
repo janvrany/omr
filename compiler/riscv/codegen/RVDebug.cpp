@@ -25,6 +25,7 @@
 #include "ras/Debug.hpp"
 
 #include "codegen/RVInstruction.hpp"
+#include "codegen/RVDisassembler.hpp"
 #include "codegen/CodeGenerator.hpp"
 #include "codegen/InstOpCode.hpp"
 #include "codegen/MemoryReference.hpp"
@@ -475,6 +476,20 @@ TR_Debug::getRVSnippetName(TR::Snippet * snippet)
       }
    }
 
+void
+TR_Debug::printRVSnippetCode(TR::FILE *pOutFile, uint8_t* code, uint32_t length)
+   {
+   auto cursor = code;
+   auto end = code + length;
+   while (cursor < end) {
+      TR::RVDissasembler::Instruction insn = 0;
+      size_t insn_len = 0;
+      TR::RVDissasembler::fetch1(cursor, &insn, &insn_len);
+      printPrefix(pOutFile, NULL, cursor, insn_len);
+      TR::RVDissasembler::disassemble1(pOutFile, cursor, insn);
+      cursor += insn_len;
+   }
+   }
 
 void
 TR_Debug::printRVSnippet(TR::FILE *pOutFile, TR::Snippet * snippet)
@@ -489,6 +504,9 @@ TR_Debug::printRVSnippet(TR::FILE *pOutFile, TR::Snippet * snippet)
                            snippet->getSnippetLabel(),
                            snippet->getSnippetLabel()->getCodeLocation(),
                            getRVSnippetName(snippet), "");
+         printRVSnippetCode(pOutFile,
+                            snippet->getSnippetLabel()->getCodeLocation(),
+                            snippet->getLength(0));
          }
       }
    }
