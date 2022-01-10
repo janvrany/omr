@@ -29,6 +29,7 @@
 #include "codegen/RealRegister.hpp"
 #include "codegen/RegisterDependency.hpp"
 #include "il/Node.hpp"
+#include "il/Node_inlines.hpp"
 
 OMR::RV::RegisterDependencyConditions::RegisterDependencyConditions(uint16_t numPreConds, uint16_t numPostConds, TR_Memory * m)
    :  _preConditions(new (numPreConds, m) TR::RegisterDependencyGroup),
@@ -45,7 +46,95 @@ OMR::RV::RegisterDependencyConditions::RegisterDependencyConditions(
                                        uint32_t          extranum,
                                        TR::Instruction  **cursorPtr)
    {
-   TR_UNIMPLEMENTED();
+   List<TR::Register>  regList(cg->trMemory());
+   TR::Instruction    *iCursor = (cursorPtr==NULL)?NULL:*cursorPtr;
+   int32_t totalNum = node->getNumChildren() + extranum;
+   int32_t i;
+
+   cg->comp()->incVisitCount();
+
+   _preConditions = new (totalNum, cg->trMemory()) TR::RegisterDependencyGroup;
+   _postConditions = new (totalNum, cg->trMemory()) TR::RegisterDependencyGroup;
+   _numPreConditions = totalNum;
+   _addCursorForPre = 0;
+   _numPostConditions = totalNum;
+   _addCursorForPost = 0;
+
+   // First, handle dependencies that match current association
+   for (i = 0; i < node->getNumChildren(); i++)
+      {
+      TR::Node *child = node->getChild(i);
+      TR::Register *reg = child->getRegister();
+      TR::RealRegister::RegNum regNum = (TR::RealRegister::RegNum)cg->getGlobalRegister(child->getGlobalRegisterNumber());
+
+      if (reg->getAssociation() != regNum)
+         {
+         continue;
+         }
+
+      addPreCondition(reg, regNum);
+      addPostCondition(reg, regNum);
+      regList.add(reg);
+      }
+
+   // Second pass to handle dependencies for which association does not exist
+   // or does not match
+   for (i = 0; i < node->getNumChildren(); i++)
+      {
+      TR::Node *child = node->getChild(i);
+      TR::Register *reg = child->getRegister();
+      TR::Register *copyReg = NULL;
+      TR::RealRegister::RegNum regNum = (TR::RealRegister::RegNum)cg->getGlobalRegister(child->getGlobalRegisterNumber());
+
+      if (reg->getAssociation() == regNum)
+         {
+         continue;
+         }
+
+      if (regList.find(reg))
+         {
+         TR_RegisterKinds kind = reg->getKind();
+
+         TR_ASSERT_FATAL((kind == TR_GPR) || (kind == TR_FPR), "Invalid register kind.");
+
+         if (kind == TR_GPR)
+            {
+            bool containsInternalPointer = reg->getPinningArrayPointer();
+            copyReg = (reg->containsCollectedReference() && !containsInternalPointer) ?
+                        cg->allocateCollectedReferenceRegister() : cg->allocateRegister();
+            if (containsInternalPointer)
+               {
+               copyReg->setContainsInternalPointer();
+               copyReg->setPinningArrayPointer(reg->getPinningArrayPointer());
+               }
+            iCursor = generateITYPE(TR::InstOpCode::_addi, node, copyReg, reg, 0, cg, iCursor);
+            }
+         else
+            {
+            bool isSinglePrecision = reg->isSinglePrecision();
+            copyReg = isSinglePrecision ? cg->allocateSinglePrecisionRegister() : cg->allocateRegister(TR_FPR);            
+            iCursor = generateRTYPE(isSinglePrecision ? TR::InstOpCode::_fsgnj_s : TR::InstOpCode::_fsgnj_d, node, copyReg, reg, reg, cg, iCursor);
+            }
+
+         reg = copyReg;
+         }
+
+      addPreCondition(reg, regNum);
+      addPostCondition(reg, regNum);
+      if (copyReg != NULL)
+         {
+         cg->stopUsingRegister(copyReg);
+         }
+      else
+         {
+         regList.add(reg);
+         }
+      }
+
+   if (iCursor != NULL && cursorPtr != NULL)
+      {
+      *cursorPtr = iCursor;
+      }
    }
 
 void OMR::RV::RegisterDependencyConditions::unionNoRegPostCondition(TR::Register *reg, TR::CodeGenerator *cg)
