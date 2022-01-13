@@ -238,6 +238,10 @@ OMR::RV::CodeGenerator::doBinaryEncoding()
       self()->setBinaryBufferCursor(cursorInstruction->generateBinaryEncoding());
       cursorInstruction = cursorInstruction->getNext();
       }
+
+   // FIXME: Create exception table entries for outlined instructions.
+
+   self()->getLinkage()->performPostBinaryEncoding();
    }
 
 TR::Linkage *OMR::RV::CodeGenerator::createLinkage(TR_LinkageConventions lc)
