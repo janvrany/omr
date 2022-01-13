@@ -44,7 +44,7 @@ compiler_library(riscv
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OMRTreeEvaluator.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/OpBinary.cpp
 	${CMAKE_CURRENT_LIST_DIR}/codegen/UnaryEvaluator.cpp
-	${CMAKE_CURRENT_LIST_DIR}/codegen/RVHelperCallSnippet.cpp	
+	${CMAKE_CURRENT_LIST_DIR}/codegen/RVHelperCallSnippet.cpp
 	${CMAKE_CURRENT_LIST_DIR}/env/OMRDebugEnv.cpp
 	${CMAKE_CURRENT_LIST_DIR}/env/OMRCPU.cpp
 	${CMAKE_CURRENT_LIST_DIR}/runtime/CodeSync.cpp

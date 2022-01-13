@@ -33,8 +33,13 @@ namespace OMR { typedef OMR::RV::InstructionDelegate InstructionDelegateConnecto
 #error OMR::RV::InstructionDelegate expected to be a primary connector, but an OMR connector is already defined
 #endif
 
+#include "codegen/MemoryReference.hpp"
 #include "compiler/codegen/OMRInstructionDelegate.hpp"
 #include "infra/Annotations.hpp"
+
+namespace TR { class JtypeInstruction; }
+namespace TR { class LoadInstruction; }
+namespace TR { class StoreInstruction; }
 
 namespace OMR
 {
@@ -48,6 +53,38 @@ protected:
 
    InstructionDelegate() {}
 
+public:
+
+   /**
+    * @brief Sets the return address to CallSnippet for Label target
+    * @param[in] cg : CodeGenerator
+    * @param[in] ins : instruction associated with CallSnippet
+    * @param[in] cursor : instruction cursor
+    */
+   static void encodeBranchToLabel(TR::CodeGenerator *cg, TR::JtypeInstruction *ins, uint8_t *cursor)
+      {
+      // Do nothing in OMR
+      }
+
+   /**
+    * @brief Determines if this instruction will throw an implicit null pointer exception and sets appropriate flags
+    * @param[in] cg    : CodeGenerator
+    * @param[in] instr : instruction with memory reference
+    */
+   static void setupImplicitNullPointerException(TR::CodeGenerator *cg, TR::LoadInstruction *instr)
+      {
+      // Do nothing in OMR
+      }
+
+   /**
+    * @brief Determines if this instruction will throw an implicit null pointer exception and sets appropriate flags
+    * @param[in] cg    : CodeGenerator
+    * @param[in] instr : instruction with memory reference
+    */
+   static void setupImplicitNullPointerException(TR::CodeGenerator *cg, TR::StoreInstruction *instr)
+      {
+      // Do nothing in OMR
+      }
    };
 
 }
