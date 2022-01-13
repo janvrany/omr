@@ -130,6 +130,9 @@ OMR::RV::CodeGenerator::initialize()
       cg->setGPRegisterIterator(new (cg->trHeapMemory()) TR::RegisterIterator(cg->machine(), TR::RealRegister::FirstGPR, TR::RealRegister::LastGPR));
       cg->setFPRegisterIterator(new (cg->trHeapMemory()) TR::RegisterIterator(cg->machine(), TR::RealRegister::FirstFPR, TR::RealRegister::LastFPR));
       }
+
+   cg->getLinkage()->setParameterLinkageRegisterIndex(comp->getJittedMethodSymbol());
+
    }
 
 void
