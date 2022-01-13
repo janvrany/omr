@@ -2652,18 +2652,7 @@ OMR::RV::TreeEvaluator::PrefetchEvaluator(TR::Node *node, TR::CodeGenerator *cg)
    return TR::TreeEvaluator::unImpOpEvaluator(node, cg);
    }
 
-/**
- * \brief Extracts (hiBit,loBit) from 64bit value, starting at bit 'hiBit'. Lowest bit is bit 0,
- * highest bit is bit 63.
- */
-static inline uint32_t extractBits(uint64_t value, uint64_t hiBit, uint64_t loBit)
-   {
-   TR_ASSERT_FATAL(hiBit <  64,          "Value of 'hiBit' must be less than 64");
-   TR_ASSERT_FATAL(loBit <= hiBit,       "Value of 'loBit' must be less or equal to hiBit");
-   TR_ASSERT_FATAL((hiBit - loBit) < 32, "Trying to extract more than 32bits");
 
-   return (value >> loBit) & ~(-1 << (hiBit - loBit + 1));
-   }
 
 TR::Instruction *loadConstant32(TR::CodeGenerator *cg, TR::Node *node, int32_t value, TR::Register *trgReg, TR::Instruction *cursor)
    {
