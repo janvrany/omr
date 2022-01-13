@@ -439,10 +439,25 @@ bool OMR::RV::CodeGenerator::isGlobalRegisterAvailable(TR_GlobalRegisterNumber i
 
 TR_GlobalRegisterNumber OMR::RV::CodeGenerator::getLinkageGlobalRegisterNumber(int8_t linkageRegisterIndex, TR::DataType type)
    {
-   TR_UNIMPLEMENTED();
+   TR_GlobalRegisterNumber result;
 
-   return 0;
-   }
+   if (type == TR::Float || type == TR::Double)
+      {
+      if (linkageRegisterIndex >= self()->getProperties()._numFloatArgumentRegisters)
+         return -1;
+      else
+         result = _fprLinkageGlobalRegisterNumbers[linkageRegisterIndex];
+      }
+   else
+      {
+      if (linkageRegisterIndex >= self()->getProperties()._numIntegerArgumentRegisters)
+         return -1;
+      else
+         result = _gprLinkageGlobalRegisterNumbers[linkageRegisterIndex];
+      }
+
+   return result;
+   }   
 
 void OMR::RV::CodeGenerator::apply16BitLabelRelativeRelocation(int32_t *cursor, TR::LabelSymbol *label)
    {
