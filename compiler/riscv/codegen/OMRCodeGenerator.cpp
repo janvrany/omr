@@ -34,6 +34,7 @@
 #include "codegen/TreeEvaluator.hpp"
 #include "il/Node.hpp"
 #include "il/Node_inlines.hpp"
+#include "il/StaticSymbol.hpp"
 
 OMR::RV::CodeGenerator::CodeGenerator(TR::Compilation *comp) :
       OMR::CodeGenerator(comp),
@@ -179,31 +180,53 @@ expandFarConditionalBranches(TR::CodeGenerator *cg)
    }
 
 void
+OMR::RV::CodeGenerator::generateBinaryEncodingPrePrologue(TR_RVBinaryEncodingData &data)
+   {
+   data.recomp = NULL;
+   data.cursorInstruction = self()->getFirstInstruction();
+   data.i2jEntryInstruction = data.cursorInstruction;
+   }
+
+
+void
 OMR::RV::CodeGenerator::doBinaryEncoding()
    {
+   TR_RVBinaryEncodingData data;
+   data.estimate = 0;
    TR::Compilation *comp = self()->comp();
-   int32_t estimate = 0;
-   TR::Instruction *cursorInstruction = self()->getFirstInstruction();
+   TR::Instruction *tempInstruction;
 
-   self()->getLinkage()->createPrologue(cursorInstruction);
+   self()->generateBinaryEncodingPrePrologue(data);
 
-   TR::Instruction *prologueCursor = self()->getFirstInstruction();
-   for (TR::Instruction *gcMapCursor = prologueCursor; NULL!= gcMapCursor; gcMapCursor = gcMapCursor->getNext())
+   data.cursorInstruction = self()->getFirstInstruction();
+
+   while (data.cursorInstruction && data.cursorInstruction->getOpCodeValue() != TR::InstOpCode::proc)
       {
-      if (gcMapCursor->needsGCMap())
-         gcMapCursor->setGCMap(self()->getStackAtlas()->getParameterMap()->clone(self()->trMemory()));
+      data.estimate = data.cursorInstruction->estimateBinaryLength(data.estimate);
+      data.cursorInstruction = data.cursorInstruction->getNext();
       }
 
-   bool skipOneReturn = false;
-   while (cursorInstruction)
+   tempInstruction = data.cursorInstruction;
+
+   if (data.recomp != NULL)
       {
-      if (cursorInstruction->getOpCodeValue() == TR::InstOpCode::retn)
+      // TODO: fix once recompilation is implemented.
+      TR_UNIMPLEMENTED();
+      // tempInstruction = data.recomp->generatePrologue(tempInstruction);
+      }
+
+   self()->getLinkage()->createPrologue(tempInstruction);
+
+   bool skipOneReturn = false;
+   while (data.cursorInstruction)
+      {
+      if (data.cursorInstruction->getOpCodeValue() == TR::InstOpCode::retn)
          {
          if (skipOneReturn == false)
             {
-            TR::Instruction *temp = cursorInstruction->getPrev();
+            TR::Instruction *temp = data.cursorInstruction->getPrev();
             self()->getLinkage()->createEpilogue(temp);
-            cursorInstruction = temp->getNext();
+            data.cursorInstruction = temp->getNext();
             skipOneReturn = true;
             }
          else
@@ -211,21 +234,21 @@ OMR::RV::CodeGenerator::doBinaryEncoding()
             skipOneReturn = false;
             }
          }
-      estimate = cursorInstruction->estimateBinaryLength(estimate);
-      cursorInstruction = cursorInstruction->getNext();
+      data.estimate = data.cursorInstruction->estimateBinaryLength(data.estimate);
+      data.cursorInstruction = data.cursorInstruction->getNext();
       }
 
-   estimate = self()->setEstimatedLocationsForSnippetLabels(estimate);
+   data.estimate = self()->setEstimatedLocationsForSnippetLabels(data.estimate);
 
    // RISCV_BRANCH_REACH is defined as 8 KiB since the range is from -4KiB
    // to +4KiB, however at any point the maximum distance one can branch is
    // 4KiB (both directions). Hence `RISCV_BRANCH_REACH / 2` in the test below.
-   if (estimate > RISCV_BRANCH_REACH / 2)
+   if (data.estimate > RISCV_BRANCH_REACH / 2)
       expandFarConditionalBranches(self());
 
-   self()->setEstimatedCodeLength(estimate);
+   self()->setEstimatedCodeLength(data.estimate);
 
-   cursorInstruction = self()->getFirstInstruction();
+   data.cursorInstruction = self()->getFirstInstruction();
    uint8_t *coldCode = NULL;
    uint8_t *temp = self()->allocateCodeMemory(self()->getEstimatedCodeLength(), 0, &coldCode);
 
@@ -233,10 +256,18 @@ OMR::RV::CodeGenerator::doBinaryEncoding()
    self()->setBinaryBufferCursor(temp);
    self()->alignBinaryBufferCursor();
 
-   while (cursorInstruction)
+   while (data.cursorInstruction)
       {
-      self()->setBinaryBufferCursor(cursorInstruction->generateBinaryEncoding());
-      cursorInstruction = cursorInstruction->getNext();
+      self()->setBinaryBufferCursor(data.cursorInstruction->generateBinaryEncoding());
+      self()->addToAtlas(data.cursorInstruction);
+
+      if (data.cursorInstruction == data.i2jEntryInstruction)
+         {
+         self()->setPrePrologueSize(self()->getBinaryBufferCursor() - self()->getBinaryBufferStart());
+         self()->comp()->getSymRefTab()->findOrCreateStartPCSymbolRef()->getSymbol()->getStaticSymbol()->setStaticAddress(self()->getBinaryBufferCursor());
+         }
+
+      data.cursorInstruction = data.cursorInstruction->getNext();
       }
 
    // FIXME: Create exception table entries for outlined instructions.

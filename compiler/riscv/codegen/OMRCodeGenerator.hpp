@@ -340,6 +340,12 @@ public:
 
    static bool isILOpCodeSupported(TR::ILOpCodes);
 
+   /**
+    * @brief Generates pre-prologue
+    * @param[in] data : binary encoding data
+    */
+   void generateBinaryEncodingPrePrologue(TR_RVBinaryEncodingData &data);
+
    private:
 
    enum // flags
