@@ -296,7 +296,14 @@ omrfilestream_close(struct OMRPortLibrary *portLibrary, OMRFileStream *fileStrea
 		rc = fclose(fileStream);
 		if (0 != rc) {
 			rc = portLibrary->error_set_last_error(portLibrary, errno, findError(errno));
+#if __GNUC__ >= 12
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuse-after-free"
+#endif
 			Trc_PRT_filestream_close_failedToClose(fileStream, rc);
+#if __GNUC__ >= 12
+#pragma GCC diagnostic pop
+#endif
 		}
 	}
 
