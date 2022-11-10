@@ -254,6 +254,61 @@ FactorialMethod::buildIL()
    return true;
    }
 
+class IterativeFactorialMethod : public StaticSignatureMethodBuilder<int32_t(int32_t)>
+   {
+   public:
+   IterativeFactorialMethod(TR::TypeDictionary *types);
+   virtual bool buildIL();
+   };
+
+IterativeFactorialMethod::IterativeFactorialMethod(TR::TypeDictionary *types)
+   : StaticSignatureMethodBuilder<int32_t(int32_t)>(types)
+   {
+   DefineLine(LINETOSTR(__LINE__));
+   DefineFile(__FILE__);
+
+   DefineName("Factorial");
+   DefineParameter("x", Int32);
+   DefineReturnType(Int32);
+   }
+
+bool
+IterativeFactorialMethod::buildIL()
+   {
+/*
+def factorial_i(x):
+                r = 1
+                while x > 0:
+                        r = r * x
+                        x = x - 1
+
+*/
+   TR::IlBuilder *loop = OrphanBuilder();
+   TR::IlBuilder *loop_body = NULL;
+   TR::IlBuilder *exit = NULL;
+   Store("r", ConstInt32(1));
+   AppendBuilder(loop);
+   loop->IfThenElse(&loop_body, &exit,
+   loop->   GreaterThan(
+   loop->      Load("x"),
+   loop->      ConstInt32(0)));
+
+   loop_body->Store("r",
+   loop_body->   Mul(
+   loop_body->      Load("r"),
+   loop_body->      Load("x")));
+   loop_body->Store("x",
+   loop_body->   Sub(
+   loop_body->      Load("x"),
+   loop_body->      ConstInt32(1)));
+   loop_body->Goto(loop);
+
+   exit->Return(
+   exit->   Load("r"));
+
+   return true;
+   }
+
 class RecursiveFibonnaciMethod : public StaticSignatureMethodBuilder<int32_t(int32_t)>
    {
    public:
@@ -406,6 +461,13 @@ TEST_F(MinimalTest, Factorial)
    SKIP_ON_AARCH64(MissingImplementation) << "Test is skipped on AArch64 because calls are not currently supported (see issue #1645)";
 
    auto entry = compile<FactorialMethod>();
+
+   EXPECT_EQ(entry(5), 120);
+   }
+
+TEST_F(MinimalTest, IterativeFactorial)
+   {
+   auto entry = compile<IterativeFactorialMethod>();
 
    EXPECT_EQ(entry(5), 120);
    }
