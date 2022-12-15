@@ -204,7 +204,38 @@ OMR::RV::MemoryReference::MemoryReference(
    _offset(0),
    _symbolReference(symRef)
    {
-   TR_UNIMPLEMENTED();
+   TR::Symbol *symbol = symRef->getSymbol();
+
+   if (symbol->isStatic())
+      {
+      if (symRef->isUnresolved())
+         {
+         self()->setUnresolvedSnippet(new (cg->trHeapMemory()) TR::UnresolvedDataSnippet(cg, node, symRef, false, false));
+         cg->addSnippet(self()->getUnresolvedSnippet());
+         }
+      else
+         {
+         _baseRegister = cg->allocateRegister();
+         self()->setBaseModifiable();
+         loadRelocatableConstant(node, symRef, _baseRegister, self(), cg);
+         }
+      }
+
+   if (symbol->isRegisterMappedSymbol())
+      {
+      if (!symbol->isMethodMetaData())
+         { // must be either auto or parm or error.
+         _baseRegister = cg->getStackPointerRegister();
+         }
+      else
+         {
+         _baseRegister = cg->getMethodMetaDataRegister();
+         }
+      }
+
+   self()->setSymbol(symbol, cg);
+   self()->addToOffset(0, symRef->getOffset(), cg);
+   self()->normalize(node, cg);
    }
 
 
@@ -561,6 +592,9 @@ void OMR::RV::MemoryReference::assignRegisters(TR::Instruction *currentInstructi
       }
    }
 
+void OMR::RV::MemoryReference::normalize(TR::Node *node, TR::CodeGenerator *cg)
+   {
+   }
 
 /* register offset */
 static bool isRegisterOffsetInstruction(uint32_t enc)

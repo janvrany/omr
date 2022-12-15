@@ -328,6 +328,13 @@ class OMR_EXTENSIBLE MemoryReference : public OMR::MemoryReference
     */
    void assignRegisters(TR::Instruction *currentInstruction, TR::CodeGenerator *cg);
 
+   /**
+    * @brief Normalizes the memory reference so that it can be encoded into instruction.
+    * @param[in] node: node
+    * @param[in] cg: CodeGenerator
+    */
+   void normalize(TR::Node *node, TR::CodeGenerator *cg);
+
    };
 
 } // RV
