@@ -395,7 +395,7 @@ enum TR_CompilationOptions
    // Available                           = 0x00000800 + 10,
    // Available                           = 0x00001000 + 10,
    TR_DisableNewMethodOverride            = 0x00002000 + 10,
-   // Available                           = 0x00004000 + 10,
+   TR_CancelCompilationOnAssume           = 0x00004000 + 10,
    // Available                           = 0x00008000 + 10,
    // Available                           = 0x00010000 + 10,
    TR_EnableSequentialLoadStoreWarm       = 0x00020000 + 10,

@@ -167,6 +167,7 @@ TR::OptionTable OMR::Options::_jitOptions[] = {
    {"breakOnThrow=",       "D{regex}\traise trap when throwing an exception whose class name matches regex", TR::Options::setRegex, offsetof(OMR::Options,             _breakOnThrow), 0, "P"},
    {"breakOnWriteBarrier", "D\tinsert breakpoint instruction ahead of inline write barrier", SET_OPTION_BIT(TR_BreakOnWriteBarrier), "F" },
    {"breakOnWriteBarrierSnippet", "D\tinsert breakpoint instruction at beginning of write barrier snippet", SET_OPTION_BIT(BreakOnWriteBarrierSnippet), "F" },
+   {"cancelCompilationOnAssume",   "M\tCancel the compilation if an assume fails (and never try to compile again)", SET_OPTION_BIT(TR_CancelCompilationOnAssume), "P"},
    {"catchBlockCounterThreshold=", "O<nnn>\tInliner will inline more aggressively on the throw path "
                                    "if the catch block counter is greater than this threshold",
                                    TR::Options::set32BitNumeric, offsetof(TR::Options, _catchBlockCounterThreshold), 50, "F%d"},

@@ -61,7 +61,7 @@ void OMR_NORETURN TR::trap()
 #else // of _MSC_VER
 
       // SIGABRT only has one global signal handler, so we cannot guard function calls against SIGABRT using the port
-      // library APIs. Raising a SIGTRAP is useful for downstream projects who may want to catch such signals for 
+      // library APIs. Raising a SIGTRAP is useful for downstream projects who may want to catch such signals for
       // compilation thread crashes and requeue such compilations (for another attempt, or perhaps to generate
       // additional diagnostic data).
       raise(SIGTRAP);
@@ -136,6 +136,11 @@ namespace TR
    static void OMR_NORETURN va_fatal_assertion(const char *file, int line, const char *condition, const char *format, va_list ap)
       {
       traceAssertionFailure(file, line, condition, format, ap);
+      TR::Compilation *comp = TR::comp();
+      if (comp && comp->getOption(TR_CancelCompilationOnAssume))
+         {
+         comp->failCompilation<TR::CompilationException>("Assertion failed at %s:%d:%s", file, line, condition);
+         }
       TR::trap();
       }
 
