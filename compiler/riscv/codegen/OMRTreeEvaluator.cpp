@@ -3115,8 +3115,62 @@ OMR::RV::TreeEvaluator::exceptionRangeFenceEvaluator(TR::Node *node, TR::CodeGen
 TR::Register *
 OMR::RV::TreeEvaluator::loadaddrEvaluator(TR::Node *node, TR::CodeGenerator *cg)
 	{
-	// TODO:RV: Enable TR::TreeEvaluator::loadaddrEvaluator in compiler/aarch64/codegen/TreeEvaluatorTable.hpp when Implemented.
-	return OMR::RV::TreeEvaluator::unImpOpEvaluator(node, cg);
+   // Load address of non-heap storage item (Auto, Parm, Static or Method)
+   TR::Register *resultReg;
+   TR::Symbol *sym = node->getSymbol();
+   TR::Compilation *comp = cg->comp();
+   TR::MemoryReference *mref = TR::MemoryReference::createWithSymRef(cg, node, node->getSymbolReference());
+
+   if (mref->getUnresolvedSnippet() != NULL)
+      {
+      resultReg = sym->isLocalObject() ? cg->allocateCollectedReferenceRegister() : cg->allocateRegister();
+      TR_UNIMPLEMENTED();
+      }
+   else
+      {
+      int32_t offset = mref->getOffset();
+      if (mref->hasDelayedOffset() || offset != 0)
+         {
+         resultReg = sym->isLocalObject() ? cg->allocateCollectedReferenceRegister() : cg->allocateRegister();
+         if (mref->hasDelayedOffset())
+            {
+            /*
+             * This is bit hacky. We want to get effective address of given
+             * mref into resultReg, but the offset is not yet known. So we
+             * generate LoadInstruction (instead ItypeInstuction) which can deal
+             * with unknown offsets. We exploit the fact, that both on RISV-V,
+             * loads are I-type instructions (in TR we have special class only
+             * because they take MemoryReference and not source register +
+             * immediate).
+             */
+            generateLOAD(TR::InstOpCode::_addi, node, resultReg, mref, cg);
+            }
+         else
+            {
+            if (offset >= 0 && VALID_ITYPE_IMM(offset))
+               {
+               generateITYPE(TR::InstOpCode::_addi, node, resultReg, mref->getBaseRegister(), offset, cg);
+               }
+            else
+               {
+               loadConstant64(cg, node, offset, resultReg);
+               generateRTYPE(TR::InstOpCode::_add, node, resultReg, mref->getBaseRegister(), resultReg, cg);
+               }
+            }
+         }
+      else
+         {
+         resultReg = mref->getBaseRegister();
+         if (resultReg == cg->getMethodMetaDataRegister())
+            {
+            resultReg = cg->allocateRegister();
+            generateITYPE(TR::InstOpCode::_addi, node, resultReg, mref->getBaseRegister(), 0, cg);
+            }
+         }
+      }
+   node->setRegister(resultReg);
+   mref->decNodeReferenceCounts(cg);
+   return resultReg;
 	}
 
 TR::Register *
