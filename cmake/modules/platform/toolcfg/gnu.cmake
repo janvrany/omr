@@ -93,6 +93,10 @@ else()
 	set(OMR_PLATFORM_THREAD_LIBRARY -pthread)
 endif()
 
+# Use dwz to "compress" debug info. This helps to reduce
+# size of debug info and speeds up GDB
+find_program(OMR_DWZ dwz)
+
 function(_omr_toolchain_separate_debug_symbols tgt)
 	set(exe_file "$<TARGET_FILE:${tgt}>")
 	if(OMR_OS_OSX)
@@ -110,6 +114,13 @@ function(_omr_toolchain_separate_debug_symbols tgt)
 	else()
 		omr_get_target_output_genex(${tgt} output_name)
 		set(dbg_file "${output_name}${OMR_DEBUG_INFO_OUTPUT_EXTENSION}")
+		if(OMR_DWZ)
+			add_custom_command(
+				TARGET "${tgt}"
+				POST_BUILD
+				COMMAND "${OMR_DWZ}" "${exe_file}"
+			)
+		endif()
 		add_custom_command(
 			TARGET "${tgt}"
 			POST_BUILD
