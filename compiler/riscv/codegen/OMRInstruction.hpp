@@ -219,6 +219,12 @@ class OMR_EXTENSIBLE Instruction : public OMR::Instruction
     */
    virtual TR::BtypeInstruction *getBtypeInstruction();
 
+   void useRegister(TR::Register *reg)
+      {
+      TR_ASSERT_FATAL(reg != nullptr, "Using null register!");
+      OMR::Instruction::useRegister(reg);
+      }
+
    private:
       TR::RegisterDependencyConditions *_conditions;
    };
