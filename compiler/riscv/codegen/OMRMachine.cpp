@@ -674,11 +674,11 @@ void OMR::RV::Machine::initializeRegisterFile()
    _registerFile[TR::RealRegister::SpilledReg] = NULL;
 
 #define DECLARE_REG(regname, type)                                             \
-   _registerFile[TR::RealRegister:: regname] =                                 \
+   _registerFile[TR::RealRegister:: _ ## regname] =                            \
          new (self()->cg()->trHeapMemory()) TR::RealRegister(type,             \
                                                  0,                            \
                                                  TR::RealRegister::Free,       \
-                                                 TR::RealRegister:: regname,   \
+                                                 TR::RealRegister:: _##regname,\
                                                  self()->cg());
 #define DECLARE_GPR(regname, abiname, encoding) DECLARE_REG(regname, TR_GPR)
 #define DECLARE_FPR(regname, abiname, encoding) DECLARE_REG(regname, TR_FPR)
@@ -741,70 +741,72 @@ OMR::RV::Machine::createCondForLiveAndSpilledGPRs(TR::list<TR::Register*> *spill
 
 uint32_t OMR::RV::Machine::_globalRegisterNumberToRealRegisterMap[] =
    {
+   // FIXME: following is bogus, just a copy-paste from AArch64 backend!
+
    // GPRs
-   TR::RealRegister::x15,
-   TR::RealRegister::x14,
-   TR::RealRegister::x13,
-   TR::RealRegister::x12,
-   TR::RealRegister::x11,
-   TR::RealRegister::x10,
-   TR::RealRegister::x9,
-   TR::RealRegister::x8, // indirect result location register
-   TR::RealRegister::x18, // platform register
+   TR::RealRegister::_x15,
+   TR::RealRegister::_x14,
+   TR::RealRegister::_x13,
+   TR::RealRegister::_x12,
+   TR::RealRegister::_x11,
+   TR::RealRegister::_x10,
+   TR::RealRegister::_x9,
+   TR::RealRegister::_x8, // indirect result location register
+   TR::RealRegister::_x18, // platform register
    // callee-saved registers
-   TR::RealRegister::x28,
-   TR::RealRegister::x27,
-   TR::RealRegister::x26,
-   TR::RealRegister::x25,
-   TR::RealRegister::x24,
-   TR::RealRegister::x23,
-   TR::RealRegister::x22,
-   TR::RealRegister::x21,
-   TR::RealRegister::x20,
-   TR::RealRegister::x19,
+   TR::RealRegister::_x28,
+   TR::RealRegister::_x27,
+   TR::RealRegister::_x26,
+   TR::RealRegister::_x25,
+   TR::RealRegister::_x24,
+   TR::RealRegister::_x23,
+   TR::RealRegister::_x22,
+   TR::RealRegister::_x21,
+   TR::RealRegister::_x20,
+   TR::RealRegister::_x19,
    // parameter registers
-   TR::RealRegister::x7,
-   TR::RealRegister::x6,
-   TR::RealRegister::x5,
-   TR::RealRegister::x4,
-   TR::RealRegister::x3,
-   TR::RealRegister::x2,
-   TR::RealRegister::x1,
-   TR::RealRegister::x0,
+   TR::RealRegister::_x7,
+   TR::RealRegister::_x6,
+   TR::RealRegister::_x5,
+   TR::RealRegister::_x4,
+   TR::RealRegister::_x3,
+   TR::RealRegister::_x2,
+   TR::RealRegister::_x1,
+   TR::RealRegister::_x0,
 
    // FPRs
-   TR::RealRegister::f31,
-   TR::RealRegister::f30,
-   TR::RealRegister::f29,
-   TR::RealRegister::f28,
-   TR::RealRegister::f27,
-   TR::RealRegister::f26,
-   TR::RealRegister::f25,
-   TR::RealRegister::f24,
-   TR::RealRegister::f23,
-   TR::RealRegister::f22,
-   TR::RealRegister::f21,
-   TR::RealRegister::f20,
-   TR::RealRegister::f19,
-   TR::RealRegister::f18,
-   TR::RealRegister::f17,
-   TR::RealRegister::f16,
+   TR::RealRegister::_f31,
+   TR::RealRegister::_f30,
+   TR::RealRegister::_f29,
+   TR::RealRegister::_f28,
+   TR::RealRegister::_f27,
+   TR::RealRegister::_f26,
+   TR::RealRegister::_f25,
+   TR::RealRegister::_f24,
+   TR::RealRegister::_f23,
+   TR::RealRegister::_f22,
+   TR::RealRegister::_f21,
+   TR::RealRegister::_f20,
+   TR::RealRegister::_f19,
+   TR::RealRegister::_f18,
+   TR::RealRegister::_f17,
+   TR::RealRegister::_f16,
    // callee-saved registers
-   TR::RealRegister::f15,
-   TR::RealRegister::f14,
-   TR::RealRegister::f13,
-   TR::RealRegister::f12,
-   TR::RealRegister::f11,
-   TR::RealRegister::f10,
-   TR::RealRegister::f9,
-   TR::RealRegister::f8,
+   TR::RealRegister::_f15,
+   TR::RealRegister::_f14,
+   TR::RealRegister::_f13,
+   TR::RealRegister::_f12,
+   TR::RealRegister::_f11,
+   TR::RealRegister::_f10,
+   TR::RealRegister::_f9,
+   TR::RealRegister::_f8,
    // parameter registers
-   TR::RealRegister::f7,
-   TR::RealRegister::f6,
-   TR::RealRegister::f5,
-   TR::RealRegister::f4,
-   TR::RealRegister::f3,
-   TR::RealRegister::f2,
-   TR::RealRegister::f1,
-   TR::RealRegister::f0
+   TR::RealRegister::_f7,
+   TR::RealRegister::_f6,
+   TR::RealRegister::_f5,
+   TR::RealRegister::_f4,
+   TR::RealRegister::_f3,
+   TR::RealRegister::_f2,
+   TR::RealRegister::_f1,
+   TR::RealRegister::_f0
    };

@@ -27,21 +27,21 @@
 
 #define DECLARE_GPR(regname, abiname, encoding) \
       abiname           = NoReg + 1 + encoding, \
-      regname           = NoReg + 1 + encoding,
+      _ ## regname      = NoReg + 1 + encoding,
 #include "codegen/riscv-regs.h"
 #undef DECLARE_GPR
 
 #define DECLARE_FPR(regname, abiname, encoding) \
-      abiname           = x31 + 1 + encoding, \
-      regname           = x31 + 1 + encoding,
+      abiname           = _x31 + 1 + encoding, \
+      _ ## regname      = _x31 + 1 + encoding,
 #include "codegen/riscv-regs.h"
 #undef DECLARE_FPR
-      FirstGPR          = x0,
-      LastGPR           = x31,
-      LastAssignableGPR = x31,
+      FirstGPR          = _x0,
+      LastGPR           = _x31,
+      LastAssignableGPR = _x31,
 
-      FirstFPR          = f0,
-      LastFPR           = f31,
-      LastAssignableFPR = f31,
-      SpilledReg        = f31 + 1,
+      FirstFPR          = _f0,
+      LastFPR           = _f31,
+      LastAssignableFPR = _f31,
+      SpilledReg        = _f31 + 1,
       NumRegisters      = SpilledReg + 1,

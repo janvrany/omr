@@ -401,9 +401,9 @@ getRegisterName(TR::RealRegister::RegNum num, bool is64bit)
    switch (num)
       {
 #define DECLARE_GPR(regname, abiname, encoding) \
-     case TR::RealRegister:: regname: return #abiname;
+     case TR::RealRegister:: abiname: return #abiname;
 #define DECLARE_FPR(regname, abiname, encoding) \
-     case TR::RealRegister:: regname: return #abiname;
+     case TR::RealRegister:: abiname: return #abiname;
 #include "codegen/riscv-regs.h"
 #undef DECLARE_GPR
 #undef DECLARE_FPR
