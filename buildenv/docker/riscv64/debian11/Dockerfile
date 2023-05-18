@@ -61,26 +61,37 @@ RUN groupadd -r jenkins \
 RUN wget -O /usr/local/include/riscv.h 'https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;a=blob_plain;f=include/opcode/riscv.h;hb=2f973f134d7752cbc662ec65da8ad8bbe4c6fb8f' \
 && wget -O /usr/local/include/riscv-opc.h 'https://sourceware.org/git/gitweb.cgi?p=binutils-gdb.git;a=blob_plain;f=include/opcode/riscv-opc.h;hb=2f973f134d7752cbc662ec65da8ad8bbe4c6fb8f'
 
-RUN cd /opt \ 
-&& git clone https://gitlab.com/qemu-project/qemu.git qemu_src \
-&& git -C qemu_src checkout v7.2.0 \
-&& mkdir qemu_bld \
-&& cd qemu_bld \
-&& ../qemu_src/configure --prefix=/opt/qemu-v7.2.0 --target-list=riscv64-linux-user --static \
-&& make -j4 \
-&& make install \
-&& /opt/qemu-v7.2.0/bin/qemu-riscv64 --version \
-&& rm -rf /opt/qemu_bld /opt/qemu_src
+# Install Debian ports GPG keys
+RUN gpg --homedir /tmp \
+	--no-default-keyring --primary-keyring "/tmp/debian-ports-keyring.gpg" \
+        --keyserver keyserver.ubuntu.com --recv-key B523E5F3FC4E5F2C
+RUN gpg --homedir /tmp \
+	--no-default-keyring --primary-keyring "/tmp/debian-ports-keyring.gpg" \
+        --keyserver keyserver.ubuntu.com --recv-key 8D69674688B6CB36
+RUN gpg --homedir /tmp \
+	--no-default-keyring --primary-keyring "/tmp/debian-ports-keyring.gpg" \
+        --export 8D69674688B6CB36 > /etc/apt/trusted.gpg.d/debian-ports-archive-2023.gpg
+RUN gpg --homedir /tmp \
+	--no-default-keyring --primary-keyring "/tmp/debian-ports-keyring.gpg" \
+        --export 8D69674688B6CB36 > /etc/apt/trusted.gpg.d/debian-ports-archive-2023.gpg
 
-# this needs to be setup on the host such that the sysroot creation in the job works, and this copy from the host succeeds
-#RUN mkdir -p /root/.gnupg \
-#&& chmod 600 /root/.gnupg \
-#&& gpg --no-default-keyring --primary-keyring /root/.gnupg/pubring.kbx --keyserver keyserver.ubuntu.com --recv-key B523E5F3FC4E5F2C \
-#&& gpg --no-default-keyring --primary-keyring /root/.gnupg/pubring.kbx --keyserver keyserver.ubuntu.com --recv-key 8D69674688B6CB36 \
-#&& gpg --no-default-keyring --primary-keyring /root/.gnupg/pubring.kbx --export B523E5F3FC4E5F2C > /etc/apt/trusted.gpg.d/debian-B523E5F3FC4E5F2C.gpg \
-#&& gpg --no-default-keyring --primary-keyring /root/.gnupg/pubring.kbx --export 8D69674688B6CB36 > /etc/apt/trusted.gpg.d/debian-8D69674688B6CB36.gpg \
-#&& mmdebstrap --variant=minbase --architectures=riscv64 --include="debian-ports-archive-keyring,build-essential,libdwarf-dev,libelf-dev,libx11-dev,libxext-dev,libxrender-dev,libxrandr-dev,libxtst-dev,libxt-dev,libasound2-dev,libcups2-dev,libfontconfig1-dev" bullseye "${WORKSPACE}/sysroot" "deb http://deb.debian.org/debian-ports/ sid main" "deb http://deb.debian.org/debian-ports/ unreleased main"
+# Install RISC-V 64 build root in /opt/sysroot
+RUN apt-get install -y fakeroot
+RUN wget -O /tmp/libfakeroot_1.31-1.2_riscv64.deb \
+	 http://ftp.ports.debian.org/debian-ports/pool-riscv64/main/f/fakeroot/libfakeroot_1.31-1.2_riscv64.deb
+RUN wget -O /tmp/libfakechroot_2.20.1+ds-15_riscv64.deb \
+	http://ftp.ports.debian.org/debian-ports/pool-riscv64/main/f/fakechroot/libfakechroot_2.20.1+ds-15_riscv64.deb
+RUN dpkg -X /tmp/libfakeroot_1.31-1.2_riscv64.deb /
+RUN dpkg -X /tmp/libfakechroot_2.20.1+ds-15_riscv64.deb /
 
-COPY sysroot /opt/
+RUN mmdebstrap \
+	--mode=fakeroot \
+	--variant=minbase \
+	--architectures=riscv64 \
+	--include="debian-ports-archive-keyring,build-essential,libdwarf-dev,libelf-dev,libx11-dev,libxext-dev,libxrender-dev,libxrandr-dev,libxtst-dev,libxt-dev,libasound2-dev,libcups2-dev,libfontconfig1-dev" \
+	bullseye "/opt/sysroot" \
+	"deb http://deb.debian.org/debian-ports/ sid main" \
+	"deb http://deb.debian.org/debian-ports/ unreleased main"
 
-# USER jenkins
+
+USER jenkins
